@@ -1,0 +1,54 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[margin=1in]{geometry}\usepackage{booktabs}
+\usepackage{graphicx,amsmath,amssymb,times,microtype,enumitem}
+\usepackage[font=small,labelfont=bf]{caption}
+\setlength{\parskip}{2pt}\setlength{\parindent}{0pt}
+\pagestyle{empty}
+\begin{document}
+\begin{center}
+{\large\bf From Disclosure to Topology: A Temporal Multiplex Framework for\\[1pt] Extracting Firm Interdependence from 10-K Filings}\\[3pt]
+{\small [Author(s) removed for blind review]}
+\end{center}
+\vspace{-6pt}
+
+\textbf{Motivation.} Firms are embedded in overlapping systems of rivalry, product substitution, and shared exposure, yet text-based firm networks in finance are typically single-layer similarity graphs (TNIC~[5]) or firm-level scores~[6]. SEC Form 10-K filings are an annually refreshed, mandated corpus in which firms self-report \emph{distinct} relation types in distinct sections. We treat the 10-K as a generative substrate for a node-aligned \emph{temporal multiplex}~[1,2,4] and ask: \textbf{how do layer-specific topology and interlayer coupling co-evolve as the information environment shifts?} We contribute (i) a schema mapping 10-K Items onto node-aligned layers with financial node attributes, (ii) explicit edge-formation rules, including rules for undisclosed competitors and asynchronous fiscal calendars, and (iii) a hand-curated pilot on Alphabet (G), Meta (M), and Nvidia (N), FY2021--2025, that surfaces the pathologies an automated pipeline must resolve.
+
+\textbf{Positioning.} Finance extracts relations from filings but collapses them into one layer (text similarity~[5], rivalry-word counts~[6], customer links~[8]); network science offers multilayer formalism and diagnostics~[1--4] but rarely confronts regulatory text, where extraction itself determines topology. We make that step auditable: every edge records its source Item, formation rule, and alignment convention.
+
+\textbf{Multiplex construction.} Let $\mathcal{M}_t=\{G^{(\alpha)}_t=(V,E^{(\alpha)}_t,\mathbf{x}_t)\}_{\alpha}$ share node set $V$ and node attributes $\mathbf{x}_{i,t}$ drawn from Item 8 segment notes: total revenue, segment revenue-share vector $\mathbf{s}_i$, long-lived-asset geography, and major-customer concentration. \textbf{L1 Product} (Items 1, 7): each firm maps to a set $C_i$ over a 9-category taxonomy (advertising, devices, XR, cloud/data-center compute, AI platforms, content \& streaming, enterprise software, autonomous mobility, health) with breadth weight $J_{ij}=|C_i\cap C_j|/|C_i\cup C_j|$; mapping segment revenues onto the same taxonomy gives a depth weight $R_{ij}=\sum_k\min(s_{ik},s_{jk})/\sum_k\max(s_{ik},s_{jk})$. \textbf{L2 Competition} (Item 1): arc $i\!\to\! j$ if $i$ names $j$; a \emph{proxy-injected} arc is added when $i$ lists a competitor category that $j$'s L1 set satisfies. \textbf{L3 Risk} (Item 1A): a bipartite firm--risk-theme graph (21 coded themes) projected with Jaccard weights. A sentiment layer (Item 7 embeddings) is deferred. Layers differ in directionality and edge semantics; we summarize $\mathcal{M}_t$ with the edge overlap $o_{ij}=\sum_\alpha a^{(\alpha)}_{ij}$, the fraction of dyads active in $\geq$2 layers, and Spearman correlation of node strength across layers~[3]. Temporal change is measured per layer as $\Delta_t^{(\alpha)}=1-\mathrm{sim}(E^{(\alpha)}_t,E^{(\alpha)}_{t-1})$, separating edge turnover from weight drift.
+
+
+
+Nvidia's attributes move most over 2021--2024 (period-aligned): revenue rises from \$26.9B to \$130.5B, its largest segment flips from Gaming (46\%) to Data Center (88\%), and the US share of its long-lived assets falls from 73\% to 58\%, while Alphabet and Meta stay above 87\% advertising-led revenue. Using financials as attributes rather than a fifth layer avoids double-counting L1 and lets attributes condition edge formation.
+
+\textbf{Coding protocol.} From 15 filings we recorded product, competitor, and risk outlines plus segment-note financials. A category is assigned only for a named revenue-generating offering; a risk theme only for a dedicated risk factor or explicit regulatory reference; a proxy arc $i\!\to\!j$ iff a category listed by $i$ matches $C_{j,t}$ under the same mapping table.
+
+\textbf{Asynchronous clocks and structural breaks.} Nvidia's fiscal year ends in late January, so FY$t$ covers roughly calendar $t{-}1$, lagging G and M by $\approx$11 months. Following the greatest-calendar-overlap convention, we \emph{period-align} Nvidia FY$t{+}1$ with G/M FY$t$ (common window 2021--2024) and treat filing-label alignment as a robustness check. Financial attributes also carry disclosure breaks that must be modeled, not ignored: Alphabet's 2023 segment recast (DeepMind to Alphabet-level costs), Nvidia's Data Center split into Compute and Networking, and ASU~2023-07 segment-expense reporting from FY2024.
+
+\textbf{Extraction pathologies.} (a) \emph{Naming collapse:} in 2021 Alphabet named 24 rivals and Meta 8 (each naming the other); from 2022 both disclose only categories, consistent with counsel advising generic competitive descriptions amid renewed antitrust scrutiny of interlocks. The explicit L2 graph falls from 3 arcs to 1 (N$\to$G), while Nvidia names 18--19 rivals yearly. Without a documented proxy rule, L2 dynamics would reflect legal drafting, not competition. (b) \emph{Semantic drift:} Alphabet adds ``AI products and services'' (2023), Meta ``frontier AI models'' (2025), Nvidia Arm-based CPU suppliers (FY2023). (c) \emph{Cross-item redundancy:} Item 1 feeds both L1 and L2, requiring disjoint criteria (\emph{what a firm sells} vs.\ \emph{whom it claims to face}). (d) \emph{Sticky text:} Item 1A is heavily carried forward~[7], so onset dates bound, rather than measure, when a risk became salient.
+
+\textbf{Preliminary observations} (Fig.~1; descriptive, $|V|=3$). \emph{L1 breadth vs.\ depth disagree.} Mean $J$ rises from 0.27 to 0.39 as firms enter shared AI and cloud categories, but revenue-weighted $R$ does not converge: G--M \emph{falls} (0.86$\to$0.77) as Cloud grows within Alphabet, G--N rises only from 0.04 to 0.07, and M--N is 0 throughout because AI is not a separately monetized line at Meta and sits inside ``Data Center'' at Nvidia. Convergence is thus a category-entry signal, not a revenue-mix signal, and the two weights should be retained as distinct edge attributes. The M--N null overlap coexists with Nvidia's rising customer concentration (three customers $\geq$10\% of revenue in FY2025), pointing to a vertical rather than horizontal tie~[8]. \emph{L2:} the proxy rule adds G$\to$N from 2023, so the G--N dyad becomes reciprocal only after Alphabet's AI competitor category appears. \emph{L3:} a dedicated AI risk factor appears for Nvidia, then Alphabet (FY2023), then Meta (FY2024, citing the EU AI Act); an indebtedness risk leaves Nvidia's filing by FY2025 and enters Alphabet's in FY2025 after its bond issuance. \emph{Beyond the cohort:} competitor mentions reach 41 external firms, 8 named by $\geq$2 cohort firms (Amazon and Microsoft by all three), marking the boundary for scaling $V$.
+
+\textbf{Why the disagreement matters.} $J$ and $R$ are two projections of one firm--category bipartite graph: $J$ tracks strategic \emph{entry}, $R$ economic \emph{mass}. Entry should lead mass, so a widening $J$--$R$ gap is a candidate early signal of structural change, and any result that flips between projections should be reported as projection-dependent. \emph{Limitations:} with $|V|=3$ we report no centrality or community results; taxonomy mapping is lossy (AI revenue is not separately reported); coding used one annotator.
+
+\textbf{Path to scale.} An LLM/NER pipeline over S\&P~500 10-Ks will use the pilot's taxonomy, proxy, and alignment rules as annotated ground truth. With $|V|\approx500$ we will test whether interlayer overlap and breadth--depth divergence grow over time and whether L3 onsets precede L1 entry under both alignments, against degree-preserving layer-shuffled nulls, and add a directed customer--supplier layer. Pre-specified hypotheses: \textbf{H1} changes in $J$ lead changes in $R$; \textbf{H2} risk-theme adoption precedes entry into the associated product category; \textbf{H3} the post-2021 decline in explicit L2 arcs is disclosure-driven, so proxy arcs recover a density-stable competition graph.
+
+\begin{figure}[h]
+\centering\vspace{-4pt}
+\includegraphics[width=0.95\linewidth]{fig1.pdf}\vspace{-6pt}
+\caption{\textbf{(a)} Node-aligned multiplex for G, M, N: L1 product, L2 competition (black: named; red dashed: proxy-injected), L3 risk; Item 8 financials enter as node attributes. \textbf{(b)} L1 edge weights, period-aligned: binary category Jaccard (solid) vs.\ revenue-weighted Ruzicka (dashed). \textbf{(c)} Disclosure years of selected Item 1A risk themes.}
+\vspace{-8pt}
+\end{figure}
+
+{\footnotesize
+\textbf{References.}
+[1] M.~Kivel\"a et al., \emph{J.\ Complex Netw.} 2(3):203--271, 2014.
+[2] S.~Boccaletti et al., \emph{Phys.\ Rep.} 544(1):1--122, 2014.
+[3] F.~Battiston, V.~Nicosia, V.~Latora, \emph{Phys.\ Rev.\ E} 89:032804, 2014.
+[4] M.~De~Domenico et al., \emph{Phys.\ Rev.\ X} 3:041022, 2013.
+[5] G.~Hoberg, G.~Phillips, \emph{J.\ Polit.\ Econ.} 124(5):1423--1465, 2016.
+[6] F.~Li, R.~Lundholm, M.~Minnis, \emph{J.\ Account.\ Res.} 51(2):399--436, 2013.
+[7] L.~Cohen, C.~Malloy, Q.~Nguyen, Lazy prices, \emph{J.\ Finance} 75(3):1371--1415, 2020.
+[8] L.~Cohen, A.~Frazzini, Economic links and predictable returns, \emph{J.\ Finance} 63(4):1977--2011, 2008.
+\par}
+\end{document}
