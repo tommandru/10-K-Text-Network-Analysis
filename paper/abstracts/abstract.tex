@@ -1,35 +1,67 @@
 \documentclass[10pt,letterpaper,twocolumn]{article}
 \usepackage[utf8]{inputenc}
-\usepackage[margin=1in]{geometry}\usepackage{booktabs}
+\usepackage[margin=1in]{geometry} 
+
+% Core Packages
+\usepackage{booktabs} 
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{graphicx}
-\usepackage{booktabs}
 \usepackage{cite}
 \usepackage{url}
+
+\usepackage{enumitem}
+\setlist[itemize]{itemsep=0pt, topsep=1pt, parsep=0pt, leftmargin=*}
+
+% Tighter float spacing
+\setlength{\textfloatsep}{4pt plus 1pt minus 1pt}
+\setlength{\intextsep}{4pt plus 1pt minus 1pt}
+\setlength{\abovecaptionskip}{2pt}
+\setlength{\belowcaptionskip}{0pt}
+\setlength{\floatsep}{4pt}
+
+
+% Bibliography spacing
+\usepackage{etoolbox}
+\patchcmd{\thebibliography}{\section*{\refname}}{\noindent\textbf{\refname}\par\medskip}{}{}
+
+% Space Optimization: Headings
 \usepackage[compact]{titlesec}
 \titlespacing{\section}{0pt}{2pt}{1pt}
 \titlespacing{\subsection}{0pt}{1.5pt}{0.5pt}
+
+% Space Optimization: Paragraphs
 \setlength{\parskip}{0pt}
 \setlength{\parindent}{10pt}
 
-\usepackage{enumitem}
-\setlist{nosep} % Eliminates all padding around and inside bullet lists
+% Safe Space Optimization: Title Block Padding Fix
+\usepackage{titling}
+\setlength{\droptitle}{-4em} % Safely removes default empty top padding
 
-% \setlength{\textfloatsep}{1pt}   % Space between top/bottom figures and text
-% \setlength{\intextsep}{1pt}      % Space between in-text figures and text
-% \setlength{\floatsep}{1pt}       % Space between two figures next to each other
+% FIX: Redefine both pre and post blocks to remove the conflicting hidden table
+\preauthor{\begin{center}\normalsize}
+\postauthor{\end{center}\vspace{-15pt}} 
 
-% \makeatletter
-% \g@addto@macro\normalsize{
-%   \setlength\abovedisplayskip{3pt}
-%   \setlength\belowdisplayskip{3pt}
-%   \setlength\abovedisplayshortskip{2pt}
-%   \setlength\belowdisplayshortskip{2pt}
-% }
+% --- TITLE & AUTHOR CONFIGURATION ---
+\setlength{\droptitle}{-4.5em}
 
-\title{\textbf{\Large Temporal Multiplex Networks of Corporate Co-Movement:\\A 10-K Derived Schema and Empirical Pilot (FY2021--2025)}}
-\author{\textbf{CompleNet 2027 Extended Abstract Submission}}
+% \pretitle{\begin{center}\bfseries\large}
+\posttitle{\end{center}\vspace{-1.4em}}
+
+% \preauthor{\begin{center}\normalsize}
+\postauthor{\end{center}\vspace{-2em}}
+
+\title{\large \textbf{Temporal Multiplex Networks of Corporate Co-Movement:}\\
+\textbf{A 10-K Derived Schema and Empirical Pilot (FY2021--2025)}}
+
+\author{
+{Amogh Mahadev Kokari}, {Dheeraj Tomandaru}, and {Sadamori Kojaku}\\[2pt]
+\small Department of Systems Science and Industrial Engineering,\\
+\small Binghamton University, Binghamton, New York, USA\\
+\small \texttt{\{akokari, dtomman1, skojaku\}@binghamton.edu}
+}
+\predate{}
 \date{}
+\postdate{}
 
 \begin{document}
 \maketitle
@@ -46,7 +78,7 @@ Annual SEC Form 10-K filings provide a standardized, legally mandated corporate 
 \label{fig:composite}
 \end{figure*}
 
-\vspace*{0.15cm}
+\vspace*{0.05cm}
 \noindent\textbf{Multiplex Network Architecture}
 We define the temporal multiplex as $\mathcal{M}_t = \{G_t^{(\alpha)} = (V, E_t^{(\alpha)}, \mathbf{x}_t)\}_{\alpha \in \mathcal{L}}$, where all layers share a node set $V = \{\text{Alphabet}, \text{Meta}, \text{Nvidia}\}$ and attribute vectors $\mathbf{x}_{i,t}$ drawn from Item 8 segment disclosures (Fig.\ \ref{fig:composite}a).
 
@@ -67,6 +99,7 @@ Bipartite firm-risk-theme projection over 21 coded Item 1A disclosure themes wei
 \centering
 \caption{\textbf{Consolidated Multiplex Metrics and Financial Edge Attributes (FY2021--2025)}}
 \label{tab:metrics}
+\resizebox{\textwidth}{!}{%
 \scriptsize
 \begin{tabular}{lcccccc}
 \toprule
@@ -80,10 +113,11 @@ Dyad G--M & --- & --- & --- & $0.286 \to 0.375$ & $0.723 \to 0.628$ & $\Delta \t
 Dyad G--N & --- & --- & --- & $0.429 \to 0.500$ & $0.064 \to 0.080$ & $\Delta \tau = 1$ yr \\
 Dyad M--N & --- & --- & --- & $0.000 \to 0.125$ & $0.000 \to 0.000$ & $\Delta \tau = 2$ yrs \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table*}
 
-\vspace*{0.15cm}
+\vspace*{0.05cm}
 \noindent\textbf{Empirical Findings \& Single-Layer Model Failure.} Cross-checking mathematical formulations against raw SEC filings (Table \ref{tab:metrics}) reveals three structural findings:
 
 \textbf{1. Breadth--Depth Divergence ($J_{ij}$ vs.\ $R_{ij}$):}
@@ -95,18 +129,23 @@ Single-layer horizontal models (e.g., TNIC) evaluate only whether firms sell sim
 \textbf{3. Predictive Lead-Lag Cross-Correlation \& Clock Alignment:}
 Nvidia's fiscal year ends in January, lagging Alphabet and Meta (Dec 31) by $\approx 11$ months. Accounting for this clock offset, dedicated AI risk factor disclosures ($L_3$) follow a strict diffusion sequence: Nvidia (FY2022) $\to$ Alphabet (FY2023) $\to$ Meta (FY2024). Cross-correlation $\mathcal{C}_{\alpha \to \beta}(\tau) = \frac{\sum_t (w_{ij}^{(\alpha)}(t) - \bar{w}^{(\alpha)})(w_{ij}^{(\beta)}(t+\tau) - \bar{w}^{(\beta)})}{\sigma_\alpha \sigma_\beta}$ demonstrates that risk disclosures ($L_3$) lead category entry ($L_1$) by $\tau = +1$ year ($\mathcal{C} = 0.84$), and upstream hardware CapEx ($L_4$) leads downstream product revenue ($L_1$) by $\tau = +1\text{--}+2$ years ($\mathcal{C} = 0.91$, Fig.\ \ref{fig:composite}c).
 
-\vspace*{0.15cm}
+\vspace*{0.05cm}
 \noindent\textbf{Practical Utility \& Path to Scale}
 This multiplex framework provides three high-impact utilities: (i) an \textbf{early-warning indicator} for corporate strategic pivots years before revenue hits income statements, (ii) a \textbf{systemic supply-chain risk model} tracking how upstream bottlenecks propagate downstream, and (iii) a \textbf{dynamic economic network standard} replacing static 1970s SIC/GICS codes.
 
 To scale across the S\&P 500 ($|V| \approx 500$, $\sim 2,500$ 10-K filings), manual processing is replaced by an automated LLM/NER pipeline. The pipeline uses structured JSON extraction over Item 1/1A to populate $L_1$--$L_3$ topologies and parses Item 8 segment note tables to assign financial edge attributes, evaluating statistical significance against degree-preserving layer-shuffled null models.
 
+\vspace*{0.1cm}
 \begin{thebibliography}{9}
-\bibitem{hoberg2016} G. Hoberg, G. Phillips, \textit{Text-based network industries and endogenous product differentiation}, J. Polit. Econ. 124(5):1423--1465, 2016.
-\bibitem{cohen2008} L. Cohen, A. Frazzini, \textit{Economic links and predictable returns}, J. Finance 63(4):1977--2011, 2008.
-\bibitem{boccaletti2014} S. Boccaletti et al., \textit{The structure and dynamics of multilayer networks}, Phys. Rep. 544(1):1--122, 2014.
-\bibitem{kivel2014} M. Kivel\"a et al., \textit{Multilayer networks}, J. Complex Netw. 2(3):203--271, 2014.
-\bibitem{cohen2020} L. Cohen, C. Malloy, Q. Nguyen, \textit{Lazy prices}, J. Finance 75(3):1371--1415, 2020.
-\end{thebibliography}
+    \vspace*{-0.5cm}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \bibitem{hoberg2016} G. Hoberg, G. Phillips, \textit{Text-based network industries and endogenous product differentiation}, J. Polit. Econ. 124(5):1423--1465, 2016.
+    \bibitem{cohen2008} L. Cohen, A. Frazzini, \textit{Economic links and predictable returns}, J. Finance 63(4):1977--2011, 2008.
+    \bibitem{boccaletti2014} S. Boccaletti et al., \textit{The structure and dynamics of multilayer networks}, Phys. Rep. 544(1):1--122, 2014.
+    \bibitem{kivel2014} M. Kivel\"a et al., \textit{Multilayer networks}, J. Complex Netw. 2(3):203--271, 2014.
+    \bibitem{cohen2020} L. Cohen, C. Malloy, Q. Nguyen, \textit{Lazy prices}, J. Finance 75(3):1371--1415, 2020.
+    \end{thebibliography}
 
 \end{document}
