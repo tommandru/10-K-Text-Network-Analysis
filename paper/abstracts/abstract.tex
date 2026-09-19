@@ -101,7 +101,7 @@ The product category overlap rises 2--3 years albeit slightly before the shared 
 Taking both together one can inquire whether declared category entry precedes realized sales mix by 2--3 years.
 \textbf{(c)} Correlation between layers at time lag $\tau$.
 Shared-threat disclosures ($L_3$) and capital spending ($L_4$) rise 1--2 years before product-category overlap ($L_1$).
-This suggests that risk disclosure lead category entry and capital expenditure leads product revenue
+This suggests that risk disclosure lead category entry and capital expenditure leads product revenue for our firms.
 }
 \label{fig:composite}
 \end{figure*}
@@ -115,7 +115,9 @@ $V = \{\text{Alphabet}, \text{Meta}, \text{Nvidia}\}$, with layer-specific edge 
 $\mathbf{x}_{i,t}$ containing firm $i$'s Item 8 segment financials in year $t$(Fig.~\ref{fig:composite}a).
 
 \textbf{1.1 Layer 1 ($L_1$) -- Product \& Service Taxonomy:}
-To measure product substitution, granular product offerings are mapped into a category space $\mathcal{C} = \{k_1, \dots, k_M\}$. For our 3-firm pilot dataset, $M=9$ categories represent the merged product space ($K_1$ Digital Advertising, $K_2$ Hardware/Devices, $K_3$ XR/VR, $K_4$ Data Center/Cloud Compute, $K_5$ AI Models/Platforms, $K_6$ Streaming/Content, $K_7$ Enterprise Workspace, $K_8$ Autonomous Mobility, $K_9$ Health Tech). Note that $M=9$ is not a hard limit but can be expanded to cover all industry sectors across the S\&P 500. $L_1$ incorporates two complementary edge metrics. 
+To measure product substitution, granular product offerings are mapped into a category space $\mathcal{C} = \{k_1, \dots, k_M\}$. For our 3-firm pilot dataset, $M=9$ categories represent the merged product space 
+($K_1$ Digital Advertising, $K_2$ Hardware/Devices, $K_3$ XR/VR, $K_4$ Data Center/Cloud Compute, $K_5$ AI Models/Platforms, $K_6$ Streaming/Content, $K_7$ Enterprise Workspace, $K_8$ Autonomous Mobility, $K_9$ Health Tech).
+ Note: $M=9$ should be expanded to cover all industry sectors across the firms and years considered. $L_1$ incorporates two complementary edge metrics. 
 First, Breadth Weight (Binary Jaccard $J_{ij}$): $J_{ij}(t) = \frac{|C_i(t) \cap C_j(t)|}{|C_i(t) \cup C_j(t)|}$, tracking active strategic entry into overlapping product categories.
 Second, Depth Weight (Revenue-Weighted Ruzicka $R_{ij}$): $R_{ij}(t) = \frac{\sum_{k=1}^M \min(s_{ik}(t), s_{jk}(t))}{\sum_{k=1}^M \max(s_{ik}(t), s_{jk}(t))}$, where $s_{ik}(t) = \frac{\text{Revenue}_{i,k}(t)}{\text{Total Revenue}_i(t)}$ represents segment revenue share.
 
@@ -201,7 +203,7 @@ To scale across the S\&P 500 for 5 years ($|V| \approx 500$, $\sim 2,500$ 10-K f
 manual processing is augmented with state-of-the-art text modeling methodologies. 
 This pipeline applies structured JSON extraction over Items 1 and 1A to populate $L_1$–$L_3$ topologies and parses Item 8 segment note tables to assign financial edge attributes with high accuracy, evaluating statistical significance against degree-preserving layer-shuffled null models.
 
-\vspace*{-.1cm}
+% \vspace*{-.1cm}
 \begin{thebibliography}{9}
     \vspace*{-.495cm}
     \setlength{\itemsep}{0pt}
