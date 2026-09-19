@@ -117,7 +117,7 @@ $\mathbf{x}_{i,t}$ containing firm $i$'s Item 8 segment financials in year $t$(F
 \textbf{1.1 Layer 1 ($L_1$) -- Product \& Service Taxonomy:}
 To measure product substitution, granular product offerings are mapped into a category space $\mathcal{C} = \{k_1, \dots, k_M\}$. For our 3-firm pilot dataset, $M=9$ categories represent the merged product space 
 ($K_1$ Digital Advertising, $K_2$ Hardware/Devices, $K_3$ XR/VR, $K_4$ Data Center/Cloud Compute, $K_5$ AI Models/Platforms, $K_6$ Streaming/Content, $K_7$ Enterprise Workspace, $K_8$ Autonomous Mobility, $K_9$ Health Tech).
- Note: $M=9$ should be expanded to cover all industry sectors across the firms and years considered. $L_1$ incorporates two complementary edge metrics. 
+ Note: $M$ is defined to cover all industry sectors across the firms and years considered. $L_1$ incorporates two complementary edge metrics. 
 First, Breadth Weight (Binary Jaccard $J_{ij}$): $J_{ij}(t) = \frac{|C_i(t) \cap C_j(t)|}{|C_i(t) \cup C_j(t)|}$, tracking active strategic entry into overlapping product categories.
 Second, Depth Weight (Revenue-Weighted Ruzicka $R_{ij}$): $R_{ij}(t) = \frac{\sum_{k=1}^M \min(s_{ik}(t), s_{jk}(t))}{\sum_{k=1}^M \max(s_{ik}(t), s_{jk}(t))}$, where $s_{ik}(t) = \frac{\text{Revenue}_{i,k}(t)}{\text{Total Revenue}_i(t)}$ represents segment revenue share.
 
