@@ -91,16 +91,16 @@ We propose a Temporal Multiplex Network Schema ((Fig.~\ref{fig:composite}) mappi
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.92\textwidth]{fig1_composite_1.png}
+\includegraphics[width=0.92\textwidth]{fig1_composite_2.png}
 \caption{\textbf{Four 10-K layers and two temporal patterns among Alphabet, Meta, and Nvidia (FY2021--2025).}
-\textbf{(a)} We represent a firm as multiplex of 4 Networks for each year.
+\textbf{(a)} We represent a firm as multiplex of 3 Networks for each year.
 \textbf{(b)} Overlap in listed product categories ($J$) and overlap in revenue mix ($R$) for Alphabet--Meta and Alphabet--Nvidia, FY2021--2024.
 $J$ measures whether two firms list the same product categories.
 $R$ measures whether they earn similar shares of revenue from those categories.
 The product category overlap rises 2--3 years albeit slightly before the shared categories contribute similar revenue.
 Taking both together one can inquire whether declared category entry precedes realized sales mix by 2--3 years.
 \textbf{(c)} Correlation between layers at time lag $\tau$.
-Shared-threat disclosures ($L_3$) and capital spending ($L_4$) rise 1--2 years before product-category overlap ($L_1$).
+Shared-threat disclosures ($L_3$) and capital spending ($\mathbf{x}_{i,t}$) rise 1--2 years before product-category overlap ($L_1$).
 This suggests that risk disclosure lead category entry and capital expenditure leads product revenue for our firms.
 }
 \label{fig:composite}
@@ -110,9 +110,9 @@ This suggests that risk disclosure lead category entry and capital expenditure l
 \noindent\textbf{1 Multiplex Network Architecture}
 We define the temporal multiplex network at year $t$ as 
 $\mathcal{M}_t = \{G_t^{(\alpha)} = (V, E_t^{(\alpha)}, \mathbf{x}_{i,t})\}_{\alpha \in \mathcal{L}}$, 
-indexed over layer set $\mathcal{L} = \{L_1, L_2, L_3, L_4\}$. All layers share a fixed node set 
+indexed over layer set $\mathcal{L} = \{L_1, L_2, L_3\}$. All layers share a fixed node set 
 $V = \{\text{Alphabet}, \text{Meta}, \text{Nvidia}\}$, with layer-specific edge sets $E_t^{(\alpha)}$ and attribute vectors
-$\mathbf{x}_{i,t}$ containing firm $i$'s Item 8 segment financials in year $t$(Fig.~\ref{fig:composite}a).
+$\mathbf{x}_{i,t}$ containing firm $i$'s Item 8 segment financials including capital expenditure in year $t$(Fig.~\ref{fig:composite}a).
 
 \textbf{1.1 Layer 1 ($L_1$) -- Product \& Service Taxonomy:}
 To measure product substitution, granular product offerings are mapped into a category space $\mathcal{C} = \{k_1, \dots, k_M\}$. For our 3-firm pilot dataset, $M=9$ categories represent the merged product space 
@@ -137,14 +137,14 @@ Bipartite firm-risk-theme projection over 21 coded Item 1A disclosure themes wei
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{lccc}
 \toprule 
-\textbf{Firm} & \textbf{Rev '21$\to$'25 (\$B)} & \textbf{US Assets (\$B)} & \textbf{AI Risk} \\
-\midrule G & \$257.6 $\to$ \$402.8 (+56\%) & \$80.2 $\to$ \$195.3 & FY2023 \\ 
-M & \$117.9 $\to$ \$201.0 (+71\%) & \$55.5 $\to$ \$173.4 & FY2024 \\ 
-N & \$16.7 $\to$ \$130.5 (+681\%) & \$1.6 $\to$ \$3.6 & FY2022 \\ 
-\midrule \textbf{Dyad} & \textbf{$J_{ij}$ ('21$\to$'24)} & \textbf{$R_{ij}$ ('21$\to$'24)} & \textbf{Lead $\Delta \tau$} \\ 
-\midrule G--M & $0.286 \to 0.375$ & $0.723 \to 0.628$ & $+1$ yr \\ 
-G--N & $0.429 \to 0.500$ & $0.064 \to 0.080$ & $+1$ yr \\ 
-M--N & $0.000 \to 0.125$ & $0.000 \to 0.000$ & $+2$ yrs \\
+\textbf{Firm} & \textbf{Rev '21$\to$'25 (\$B)} & \textbf{US Assets (\$B)} & \textbf{AI Risk}\\
+\midrule G & \$257.6 $\to$ \$402.8 (+56\%) & \$80.2 $\to$ \$195.3 & FY2023\\ 
+M & \$117.9 $\to$ \$201.0 (+71\%) & \$55.5 $\to$ \$173.4 & FY2024\\ 
+N & \$16.7 $\to$ \$130.5 (+681\%) & \$1.6 $\to$ \$3.6 & FY2022\\ 
+\midrule \textbf{Dyad} & \textbf{$J_{ij}$ ('21$\to$'24)} & \textbf{$R_{ij}$ ('21$\to$'24)} & \textbf{Lead $\Delta \tau$}\\ 
+\midrule G--M & $0.286 \to 0.375$ & $0.723 \to 0.628$ & $+1$ yr\\ 
+G--N & $0.429 \to 0.500$ & $0.064 \to 0.080$ & $+1$ yr\\ 
+M--N & $0.000 \to 0.125$ & $0.000 \to 0.000$ & $+2$ yrs\\
 \bottomrule 
 \end{tabular}
 }
@@ -186,11 +186,21 @@ M--N & $0.000 \to 0.125$ & $0.000 \to 0.000$ & $+2$ yrs \\
 \textbf{2.1 Breadth--Depth Divergence ($J_{ij}$ vs.\ $R_{ij}$):}
 Product category overlap $J_{GM}$ (Alphabet--Meta) rose from $0.286$ in 2021 to $0.375$ in 2024 as Meta entered AI models and smart hardware. Conversely, revenue-weighted Ruzicka $R_{GM}$ fell from $0.723$ to $0.628$ because Alphabet's Cloud growth ($\$19.2\text{B} \to \$58.7\text{B}$) shifted its revenue mix away from digital advertising (Fig.\ \ref{fig:composite}b). The widening $J - R$ gap ($+0.420$ for Alphabet--Nvidia) mathematically proves that \textit{category entry precedes revenue realization by 2--3 years}.
 
-\textbf{2.2 Failure of Single-Layer Models (Meta--Nvidia Proof):}
-Single-layer horizontal models (e.g., TNIC) evaluate only whether firms sell similar products. Because Meta sells consumer social apps and Nvidia sells enterprise GPUs, their horizontal revenue overlap is $R_{MN} = 0.000$, causing single-layer graphs to place \textit{no edge} between them. However, Item 8 disclosures reveal that Meta is a top customer of Nvidia ($34\%$ revenue concentration across 3 customers in FY25). Single-layer models predict zero coupling, whereas our vertical Item 8 supply-chain layer ($L_4$) and risk layer ($L_3$) capture this vital infrastructure coupling (Fig.~\ref{fig:composite}a).
+% \textbf{2.2 Failure of Single-Layer Models (Meta--Nvidia Proof):}
+% Single-layer horizontal models (e.g., TNIC) evaluate only whether firms sell similar products. Because Meta sells consumer social apps and Nvidia sells enterprise GPUs, their horizontal revenue overlap is $R_{MN} = 0.000$, causing single-layer graphs to place \textit{no edge} between them. However, Item 8 disclosures reveal that Meta is a top customer of Nvidia ($34\%$ revenue concentration across 3 customers in FY25). Single-layer models predict zero coupling, whereas our vertical Item 8 supply-chain layer ($L_4$) and risk layer ($L_3$) capture this vital infrastructure coupling (Fig.~\ref{fig:composite}a).
+% \textbf{2.2 Failure of Single-Layer Models (Meta--Nvidia Paradox):} 
+\textbf{2.2 Failure of Single-Layer Models (Meta--Nvidia):} 
+Single-layer horizontal models (e.g., TNIC \cite{hoberg2016}) evaluate only whether firms sell similar products. Because Meta sells consumer social apps and Nvidia sells enterprise GPUs, their horizontal revenue overlap is $R_{MN} = 0.000$, causing single-layer graphs to place \textit{no edge} between them. However, cross-referencing Item 8 node attributes $\mathbf{x}_{i,t}$ shows Meta's US data center assets expanding by $+212.4\%$ ($\$55.5\text{B} \to \$173.4\text{B}$), driving shared co-movement with Nvidia's Data Center revenue. Combining node attributes $\mathbf{x}_{i,t}$ with Layer 3 ($L_3$) AI risk disclosures captures their underlying infrastructure co-movement without asserting unverified direct edges.
+% \textbf{2.3 Predictive Lead-Lag Cross-Correlation \& Clock Alignment:}
+% Nvidia's fiscal year ends in January, lagging Alphabet and Meta (Dec 31) by $\approx 11$ months. Accounting for this clock offset, dedicated AI risk factor disclosures ($L_3$) follow a strict diffusion sequence: Nvidia (FY2022) $\to$ Alphabet (FY2023) $\to$ Meta (FY2024). Cross-correlation $\mathcal{C}_{\alpha \to \beta}(\tau) = \frac{\sum_t (w_{ij}^{(\alpha)}(t) - \bar{w}^{(\alpha)})(w_{ij}^{(\beta)}(t+\tau) - \bar{w}^{(\beta)})}{\sigma_\alpha \sigma_\beta}$ demonstrates that risk disclosures ($L_3$) lead category entry ($L_1$) by $\tau = +1$ year ($\mathcal{C} = 0.84$), and upstream hardware CapEx ($L_4$) leads downstream product revenue ($L_1$) by $\tau = +1\text{--}+2$ years ($\mathcal{C} = 0.91$, Fig.\ \ref{fig:composite}c).
 
-\textbf{2.3 Predictive Lead-Lag Cross-Correlation \& Clock Alignment:}
-Nvidia's fiscal year ends in January, lagging Alphabet and Meta (Dec 31) by $\approx 11$ months. Accounting for this clock offset, dedicated AI risk factor disclosures ($L_3$) follow a strict diffusion sequence: Nvidia (FY2022) $\to$ Alphabet (FY2023) $\to$ Meta (FY2024). Cross-correlation $\mathcal{C}_{\alpha \to \beta}(\tau) = \frac{\sum_t (w_{ij}^{(\alpha)}(t) - \bar{w}^{(\alpha)})(w_{ij}^{(\beta)}(t+\tau) - \bar{w}^{(\beta)})}{\sigma_\alpha \sigma_\beta}$ demonstrates that risk disclosures ($L_3$) lead category entry ($L_1$) by $\tau = +1$ year ($\mathcal{C} = 0.84$), and upstream hardware CapEx ($L_4$) leads downstream product revenue ($L_1$) by $\tau = +1\text{--}+2$ years ($\mathcal{C} = 0.91$, Fig.\ \ref{fig:composite}c).
+% \textbf{2.3 Predictive Lead-Lag Cross-Correlation:} 
+% Cross-correlation $\mathcal{C}_{\alpha \to \beta}(\tau)$ demonstrates that risk disclosures ($L_3$) lead product category entry ($L_1$) by $\tau = +1$ year ($\mathcal{C} = 0.84$), and upstream CapEx node attributes ($\mathbf{x}_{\text{CapEx}}$) lead downstream product revenue ($L_1$) by $\tau = +1\text{--}+2$ years ($\mathcal{C} = 0.91$, Fig.\ \ref{fig:results}b).
+\textbf{2.3 Predictive Lead-Lag Cross-Correlation \& Clock Alignment:} 
+% Nvidia's fiscal year ends in January, lagging Alphabet and Meta (Dec 31) by $\approx 11$ months. Accounting for this clock offset, dedicated AI risk factor disclosures ($L_3$) follow a strict diffusion sequence: Nvidia (FY2022) $\to$ Alphabet (FY2023) $\to$ Meta (FY2024). Cross-correlation $\mathcal{C}_{\alpha \to \beta}(\tau) = \frac{\sum_t (w_{ij}^{(\alpha)}(t) - \bar{w}^{(\alpha)})(w_{ij}^{(\beta)}(t+\tau) - \bar{w}^{(\beta)})}{\sigma_\alpha \sigma_\beta}$ demonstrates that risk disclosures ($L_3$) lead category entry ($L_1$) by $\tau = +1$ year ($\mathcal{C} = 0.84$), and Item 8 CapEx node attributes ($\mathbf{x}_{i,t}$) lead downstream product revenue ($L_1$) by $\tau = +1\text{--}+2$ years ($\mathcal{C} = 0.91$, Fig.\ \ref{fig:composite}b).
+% Nvidia's fiscal year ends in January, lagging Alphabet and Meta (Dec 31) by $\approx 11$ months. Accounting for this clock offset, dedicated AI risk factor disclosures ($L_3$) follow a strict diffusion sequence: Nvidia (FY2022) $\to$ Alphabet (FY2023) $\to$ Meta (FY2024). Temporal cross-correlation \cite{boccaletti2014,kivel2014} demonstrates that risk disclosures ($L_3$) lead category entry ($L_1$) by $\tau = +1$ year ($\mathcal{C} = 0.84$), and Item 8 CapEx node attributes ($\mathbf{x}_{i,t}$) lead downstream product revenue ($L_1$) by $\tau = +1\text{--}+2$ years ($\mathcal{C} = 0.91$).
+Nvidia's fiscal year ends in January, lagging Alphabet and Meta (Dec 31) by $\approx 11$ months. Accounting for this clock offset, dedicated AI risk factor disclosures ($L_3$) follow a strict diffusion sequence: Nvidia (FY2022) $\to$ Alphabet (FY2023) $\to$ Meta (FY2024). Temporal lead-lag is evaluated via cross-correlation $\mathcal{C}_{\alpha \to \beta}(\tau)=\frac{\sum_t (w_{ij}^{(\alpha)}(t) - \bar{w}^{(\alpha)})(w_{ij}^{(\beta)}(t+\tau) - \bar{w}^{(\beta)})}{\sigma_\alpha \sigma_\beta}$, where $\tau$ is the lag in years, $w_{ij}^{(\alpha)}(t)$ and $w_{ij}^{(\beta)}(t+\tau)$ are edge weights/attributes for precursor layer $\alpha$ and target layer $\beta$, and $\bar{w}, \sigma$ are layer means and standard deviations \cite{boccaletti2014,kivel2014}. Results prove risk disclosures ($L_3$) lead category entry ($L_1$) by $\tau = +1$ year ($\mathcal{C} = 0.84$), and CapEx node attributes ($\mathbf{x}_{i,t}$) lead product revenue ($L_1$) by $\tau = +1\text{--}+2$ years ($\mathcal{C} = 0.91$).
+
 
 \vspace*{0.1cm}
 \noindent\textbf{3 Practical Utility \& Path to Scale}
@@ -201,7 +211,10 @@ replacing static 1970s SIC/GICS codes.
 
 To scale across the S\&P 500 for 5 years ($|V| \approx 500$, $\sim 2,500$ 10-K filings), 
 manual processing is augmented with state-of-the-art text modeling methodologies. 
-This pipeline applies structured JSON extraction over Items 1 and 1A to populate $L_1$–$L_3$ topologies and parses Item 8 segment note tables to assign financial edge attributes with high accuracy, evaluating statistical significance against degree-preserving layer-shuffled null models.
+This pipeline applies structured JSON extraction over Items 1, 1A and 8.
+% By systematically cross-referencing capital expenditure node attributes against multi-tier customer concentration disclosures, this expanded model can probabilistically deduce customer-supplier linkages across diverse ecosystem.
+This expanded model would cross-references capital expenditure attributes with multi-tier customer concentration disclosures to map supplier linkages across diverse ecosystems.
+
 
 % \vspace*{-.1cm}
 \begin{thebibliography}{9}
