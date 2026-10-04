@@ -1,0 +1,38 @@
+\section{Sequential Tranche Data Extraction Methodology}
+\label{sec:extraction}
+
+We developed a custom distributed workflow to extract target operational and financial disclosures from SEC Form 10-K filings to construct a Hierarchical Network of Networks representing leading U.S. firms tracked by the Invesco QQQ Index. To ensure a fixed macro-node set across all temporal snapshots, our analysis is restricted to a static cohort of 108 firms that issued Form 10-K filings continuously every year from 2021 to 2025. Inspired by sequential waterfall structures in structured finance, our data modeling pipeline is organized into four dependency-driven tranches:
+\begin{itemize}
+    \item \textbf{Tranche 1 (Static Company List):} Extracting corporate names, Central Index Keys (CIKs), and identifying metadata from quarterly QQQ index filings.
+    \item \textbf{Tranche 2 (Section-Level Parsing):} Extracting raw narrative text and segmented financial tables for each company from SEC Form 10-K filings (Items 1, 1A, 7, and 8).
+    \item \textbf{Tranche 3 (Nested JSON Serialization):} Structuring parsed disclosures via an LLM workflow into a nested JSON schema that models each firm as an independent sub-network of Products/Services, Competition, and Risk, annotated with Revenue by Segment and Geography as attributes.
+    \item \textbf{Tranche 4 (Hierarchical Network Construction):} Instantiating a multi-level network of networks consisting of a \textit{Macro-Level Topology} (inter-firm connections across the 108 company nodes) and a \textit{Micro-Level Topology} (intra-firm sub-graphs weighted by segment revenue).
+\end{itemize}
+
+\input{tables/tab_pipeline_yield.tex}
+
+\subsection{Tranche 1: Static Company List}
+We extract company names and CIKs of all companies tracked by QQQ by utilizing quarterly Form N-PORT filings sourced from the U.S. Securities and Exchange Commission (SEC). Using a custom Python pipeline, we download submission files for the QQQ series identifier (\texttt{S000101292}) from \texttt{data.sec.gov} for Invesco covering 2021 to 2025. Next, we filter these 20 quarterly files to isolate the Form N-PORT filings and parse each filing to extract unique identifiers—specifically corporate names, International Securities Identification Numbers (ISINs), Committee on Uniform Securities Identification Procedures (CUSIP) identifiers, Country, and \texttt{Asset\_Category}. To isolate U.S.-based firms with primary business operations in the United States, we filter out entries where \texttt{country != 'US'}. We then remove redundant entries by filtering for unique ISINs, yielding 120 unique CIKs.
+
+Lastly, we manually audited the list to ensure each CIK maintains continuous Form 10-K filings across the five-year window. For companies lacking complete history, we document the underlying structural causes; for example, Activision Blizzard was omitted following its acquisition by Microsoft. This multi-stage filtering yields a final static cohort of $N = 108$ unique corporate nodes for our network construction (Table~\ref{tab:pipeline_yield}).
+
+\subsection{Tranche 2: Section-Level Parsing}
+We utilize the verified CIK list from Tranche 1 to extract target textual sections and financial tables from the annual Form 10-K filings. Item 1 (\textit{Business}) and Item 1A (\textit{Risk Factors}) sections are parsed programmatically using Python and the \texttt{edgartools} library. Due to structural formatting anomalies in the Form 10-K filings for Honeywell International Inc. and Intel Corporation, we implemented targeted string-manipulation scripts directly on raw filing text to isolate Item 1 disclosures cleanly.
+
+For the quantitative financial disclosures (Items 7 and 8), we developed a three-stage fallback extraction pipeline covering the five-year window (2021--2025):
+\begin{enumerate}
+    \item \textbf{Primary XBRL Extraction:} We automated the extraction of four distinct XBRL statement types per filing, creating a validation pool of 2,160 data instances ($108\text{ firms} \times 5\text{ years} \times 4\text{ statements}$). We manually audited this pool to identify the optimal statement representation for each firm.
+    \item \textbf{Automated Keyword Fallback:} For filings failing primary XBRL extraction, we executed an automated parser targeting segment and geographic revenue keywords, followed by a secondary manual verification step.
+    \item \textbf{Native HTML Anchor Splitting:} Remaining data gaps were resolved by manually cross-referencing the native HTML filings to identify exact keyword anchors, then applying targeted string-splitting operations (\texttt{str.split}) to isolate the tabular blocks.
+\end{enumerate}
+To maximize data density, we retain all extracted financial records across business segments, geographic distributions, and total revenue streams while enforcing longitudinal continuity across the five-year period. This pipeline yields a verified dataset mapping each CIK and 10-K filing date to its corresponding text and table blocks: Item 1, Item 1A, and Financial Data (Total, Segment, and Geographic Revenue).
+
+\subsection{Tranche 3: LLM-Driven Nested JSON Serialization}
+Following section-level parsing in Tranche 2, Tranche 3 transforms the heterogeneous narrative and tabular blocks into a standardized, hierarchical JSON schema for each firm-year filing $(i, t)$. Because corporate filers vary widely in how they describe product lines, competitive threats, and risk exposures, we implement an automated Large Language Model (LLM) serialization workflow engineered to map unstructured text and segmented financial tables into four primary functional branches anchored to the company root node (see Fig.~\ref{fig:micro_macro_schema}):
+\begin{enumerate}
+    \item \textbf{Product and Service Hierarchy (with Segment Financial Attributes):} Operating segments ($\text{Segment}_a, \\ \text{Segment}_b, \dots, \text{Segment}_n$) are extracted and annotated with quantitative segment revenues from Items 7 and 8 as node-level financial attributes. Specific products and services extracted from Item 1 are then mapped as child leaf nodes under their corresponding segments.
+    \item \textbf{Bifurcated Competitor Mapping:} Competitive disclosures from Item 1 are partitioned under the \texttt{Competitor} hub into a \texttt{Segment} sub-branch (mapping named competitors directly to $\text{Segment}_a, \dots, \text{Segment}_n$) and an \texttt{Others} sub-branch capturing general, enterprise-wide competitors.
+    \item \textbf{Segment vs.\ External Risk Classification:} Risk factors from Item 1A are serialized under the \texttt{Risk} hub into a \texttt{Segment} sub-branch (segment-specific operational risks) and an \texttt{Other / External} sub-branch (macroeconomic, regulatory, and systemic risks).
+    \item \textbf{Geographic and Other Revenue Decomposition:} Quantitative disclosures from Items 7 and 8 are organized under a \texttt{Geographic \& Other Revenue} hub, bifurcating into a \texttt{Geographic} branch ($\text{Region}_a, \text{Region}_b, \\ \dots, \text{Region}_n$, and $\text{Rest}$, where regions denote countries or continents as reported by the filer) and an \texttt{Other} branch.
+\end{enumerate}
+In addition to these four operational branches, each serialized JSON root object records firm-level metadata including the Central Index Key (CIK), annual market capitalization, and the exact Form 10-K filing date $d_{\text{file}}(C_i^{(t)})$.

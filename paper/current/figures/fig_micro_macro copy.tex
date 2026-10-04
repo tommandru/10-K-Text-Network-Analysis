@@ -1,0 +1,210 @@
+\begin{figure}[htbp]
+\centering
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[
+    >=Stealth,
+    rootnode/.style={ellipse, draw=black!90, very thick, fill=blue!10, minimum width=2.3cm, minimum height=0.95cm, align=center, font=\small\bfseries},
+    hubnode/.style={ellipse, draw=black!85, thick, fill=gray!12, minimum width=2.0cm, minimum height=0.8cm, align=center, font=\footnotesize\bfseries},
+    subnode/.style={ellipse, draw=black!80, semithick, fill=white, minimum width=1.55cm, minimum height=0.65cm, align=center, font=\scriptsize},
+    segnode/.style={ellipse, draw=blue!80!black, semithick, fill=blue!4, minimum width=1.55cm, minimum height=0.62cm, align=center, font=\scriptsize},
+    prodleaf/.style={ellipse, draw=black!75, semithick, fill=white, minimum width=2.1cm, minimum height=0.75cm, align=center, font=\scriptsize},
+    dotleaf/.style={circle, draw=black!80, semithick, fill=gray!20, inner sep=2.2pt},
+    macronode/.style={circle, draw=black!85, thick, fill=blue!6, align=center, font=\scriptsize\bfseries},
+    annot/.style={font=\footnotesize\itshape, align=left, text=black!85},
+    edgestyle/.style={draw=black!80, semithick},
+    dotedge/.style={draw=black!80, thick, dashdotted}
+]
+
+% =========================================================================
+% 1. MICRO-LEVEL NETWORK (TOP: COMPANY 8)
+% =========================================================================
+
+% --- Center Root Node ---
+\node[rootnode] (comp8) at (0,0) {Company 8};
+
+% -------------------------------------------------------------------------
+% A. TOP BRANCH: COMPETITOR
+% -------------------------------------------------------------------------
+\node[hubnode] (comp_hub) at (0, 1.9) {Competitor};
+\node[subnode] (comp_seg) at (-1.5, 3.2) {Segment};
+\node[subnode] (comp_oth) at (1.6, 3.1) {Others};
+
+\node[segnode] (comp_sa) at (-3.3, 4.4) {$\text{Segment}_a$};
+\node[segnode] (comp_sb) at (-1.5, 4.6) {$\text{Segment}_b$};
+\node[segnode] (comp_sn) at (0.3, 4.4) {$\text{Segment}_n$};
+
+% Competitor edges
+\draw[edgestyle] (comp8) -- (comp_hub);
+\draw[edgestyle] (comp_hub) -- (comp_seg);
+\draw[edgestyle] (comp_hub) -- (comp_oth);
+\draw[edgestyle] (comp_seg) -- (comp_sa);
+\draw[edgestyle] (comp_seg) -- (comp_sb);
+\draw[edgestyle] (comp_seg) -- (comp_sn);
+
+% Competitor small leaf nodes
+\node[dotleaf] (csa1) at (-4.1, 5.2) {};
+\node[dotleaf] (csa2) at (-3.4, 5.4) {};
+\node[dotleaf] (csa3) at (-2.7, 5.2) {};
+\draw[edgestyle] (comp_sa) -- (csa1);
+\draw[edgestyle] (comp_sa) -- (csa2);
+\draw[edgestyle] (comp_sa) -- (csa3);
+
+\node[dotleaf] (csb1) at (-1.9, 5.5) {};
+\node[dotleaf] (csb2) at (-1.1, 5.5) {};
+\draw[edgestyle] (comp_sb) -- (csb1);
+\draw[edgestyle] (comp_sb) -- (csb2);
+
+\node[dotleaf] (csn1) at (0.1, 5.3) {};
+\node[dotleaf] (csn2) at (0.9, 5.2) {};
+\node[dotleaf] (csn3) at (1.2, 4.5) {};
+\draw[edgestyle] (comp_sn) -- (csn1);
+\draw[edgestyle] (comp_sn) -- (csn2);
+\draw[edgestyle] (comp_sn) -- (csn3);
+
+\node[dotleaf] (coth1) at (2.4, 3.8) {};
+\node[dotleaf] (coth2) at (2.6, 3.0) {};
+\node[dotleaf] (coth3) at (2.1, 2.2) {};
+\draw[edgestyle] (comp_oth) -- (coth1);
+\draw[edgestyle] (comp_oth) -- (coth2);
+\draw[edgestyle] (comp_oth) -- (coth3);
+
+% -------------------------------------------------------------------------
+% B. RIGHT BRANCH: RISK
+% -------------------------------------------------------------------------
+\node[hubnode] (risk_hub) at (2.8, 0.1) {Risk};
+\node[subnode] (risk_seg) at (4.7, 1.4) {Segment};
+\node[subnode] (risk_oth) at (4.8, -1.0) {Other /\\External};
+
+\node[segnode] (risk_sa) at (6.9, 2.5) {$\text{Segment}_a$};
+\node[segnode] (risk_sb) at (7.1, 1.4) {$\text{Segment}_b$};
+\node[segnode] (risk_sn) at (6.9, 0.3) {$\text{Segment}_n$};
+
+% Risk edges
+\draw[edgestyle] (comp8) -- (risk_hub);
+\draw[edgestyle] (risk_hub) -- (risk_seg);
+\draw[edgestyle] (risk_hub) -- (risk_oth);
+\draw[edgestyle] (risk_seg) -- (risk_sa);
+\draw[edgestyle] (risk_seg) -- (risk_sb);
+\draw[edgestyle] (risk_seg) -- (risk_sn);
+
+% Risk small leaf nodes
+\node[dotleaf] (rsa1) at (8.1, 3.1) {};
+\node[dotleaf] (rsa2) at (8.3, 2.5) {};
+\node[dotleaf] (rsa3) at (8.0, 2.0) {};
+\draw[edgestyle] (risk_sa) -- (rsa1);
+\draw[edgestyle] (risk_sa) -- (rsa2);
+\draw[edgestyle] (risk_sa) -- (rsa3);
+
+\node[dotleaf] (rsb1) at (8.4, 1.7) {};
+\node[dotleaf] (rsb2) at (8.4, 1.1) {};
+\draw[edgestyle] (risk_sb) -- (rsb1);
+\draw[edgestyle] (risk_sb) -- (rsb2);
+
+\node[dotleaf] (rsn1) at (8.1, 0.6) {};
+\node[dotleaf] (rsn2) at (8.3, 0.1) {};
+\node[dotleaf] (rsn3) at (7.9, -0.4) {};
+\draw[edgestyle] (risk_sn) -- (rsn1);
+\draw[edgestyle] (risk_sn) -- (rsn2);
+\draw[edgestyle] (risk_sn) -- (rsn3);
+
+\node[dotleaf] (roth1) at (6.3, -0.8) {};
+\node[dotleaf] (roth2) at (6.0, -1.7) {};
+\draw[edgestyle] (risk_oth) -- (roth1);
+\draw[edgestyle] (risk_oth) -- (roth2);
+
+% -------------------------------------------------------------------------
+% C. LEFT BRANCH: GEOGRAPHIC & OTHER REVENUE (Dotted Link)
+% -------------------------------------------------------------------------
+\node[hubnode] (geo_hub) at (-3.4, -0.1) {Geographic\\\& Other\\Revenue};
+\node[subnode] (geo_sub) at (-5.1, 1.3) {Geographic};
+\node[subnode] (geo_oth) at (-5.2, -1.4) {Other};
+
+\node[subnode] (cnt_a) at (-7.2, 2.2) {$\text{Region}_a$};
+\node[subnode] (cnt_b) at (-5.9, 2.8) {$\text{Region}_b$};
+\node[subnode] (cnt_n) at (-4.4, 3.2) {$\text{Region}_n$};
+\node[subnode, minimum width=1.1cm] (cnt_rest) at (-3.5, 2.2) {Rest};
+
+% Geographic edges
+\draw[dotedge] (comp8) -- (geo_hub);
+\draw[edgestyle] (geo_hub) -- (geo_sub);
+\draw[edgestyle] (geo_hub) -- (geo_oth);
+\draw[edgestyle] (geo_sub) -- (cnt_a);
+\draw[edgestyle] (geo_sub) -- (cnt_b);
+\draw[edgestyle] (geo_sub) -- (cnt_n);
+\draw[edgestyle] (geo_sub) -- (cnt_rest);
+
+\node[dotleaf] (goth1) at (-6.0, -2.3) {};
+\node[dotleaf] (goth2) at (-4.8, -2.4) {};
+\draw[edgestyle] (geo_oth) -- (goth1);
+\draw[edgestyle] (geo_oth) -- (goth2);
+
+% -------------------------------------------------------------------------
+% D. BOTTOM BRANCH: PRODUCT / SERVICES & FINANCIAL ATTRIBUTES
+% -------------------------------------------------------------------------
+\node[hubnode] (prod_hub) at (0, -1.8) {Product /\\Services};
+
+\node[segnode] (prod_sa) at (-2.0, -3.4) {$\text{Segment}_a$};
+\node[segnode] (prod_sn) at (0.0, -3.9) {$\text{Segment}_n$};
+\node[segnode] (prod_sb) at (2.0, -3.4) {$\text{Segment}_b$};
+
+% Dashed oval grouping the segments for Financial Attributes
+\node[draw=blue!70!black, dashed, thick, rounded corners=12pt, inner sep=6pt, fit=(prod_sa) (prod_sn) (prod_sb)] (fin_box) {};
+\node[annot, text=blue!80!black, font=\footnotesize\bfseries] (fin_label) at (4.8, -2.7) {Financial\\Attributes (Nodes)};
+\draw[->, thick, blue!70!black] (fin_box.east) to[bend left=12] (fin_label.west);
+
+% Product/Service Leaf Nodes
+\node[prodleaf] (leaf_pa) at (-2.6, -5.2) {Prod/Services\\$a, d, e$};
+\node[prodleaf] (leaf_pn) at (0.0, -5.5) {Prod/Services\\$a, b, n$};
+\node[prodleaf] (leaf_pb) at (2.6, -5.2) {Prod/Services\\$c, f, g$};
+
+\draw[edgestyle] (comp8) -- (prod_hub);
+\draw[edgestyle] (prod_hub) -- (prod_sa);
+\draw[edgestyle] (prod_hub) -- (prod_sn);
+\draw[edgestyle] (prod_hub) -- (prod_sb);
+\draw[edgestyle] (prod_sa) -- (leaf_pa);
+\draw[edgestyle] (prod_sn) -- (leaf_pn);
+\draw[edgestyle] (prod_sb) -- (leaf_pb);
+
+% =========================================================================
+% 2. MACRO-LEVEL NETWORK (BOTTOM: MARKET-CAP SPIRAL C_1 ... C_108)
+% =========================================================================
+
+% Spiral of Macro Nodes ordered by Market Cap
+\node[macronode, minimum size=0.42cm, font=\tiny] (c1) at (-0.3, -8.8) {$C_1$};
+\node[macronode, minimum size=0.50cm, font=\tiny] (c2) at (-0.9, -8.9) {$C_2$};
+\node[macronode, minimum size=0.58cm, font=\tiny] (c3) at (-1.0, -9.6) {$C_3$};
+\node[macronode, minimum size=0.66cm, font=\scriptsize] (c4) at (-0.3, -10.0) {$C_4$};
+\node[macronode, minimum size=0.75cm, font=\scriptsize] (c5) at (0.5, -9.6) {$C_5$};
+\node[macronode, minimum size=0.84cm, font=\scriptsize] (c6) at (0.4, -8.5) {$C_6$};
+\node[macronode, minimum size=0.94cm, font=\scriptsize] (c7) at (-0.9, -7.9) {$C_7$};
+\node[macronode, minimum size=1.10cm, fill=blue!22, very thick] (c8) at (-2.2, -9.1) {$C_8$};
+\node[macronode, minimum size=1.22cm] (c9) at (-1.3, -10.9) {$C_9$};
+\node[macronode, minimum size=1.36cm] (c10) at (0.7, -11.0) {$C_{10}$};
+\node[macronode, minimum size=1.52cm] (c11) at (2.2, -9.6) {$C_{11}$};
+\node[macronode, minimum size=1.80cm] (c108) at (0.3, -7.0) {$C_{108}$};
+
+% Illustrative configurable macro-edges (showing some connected, some isolated)
+\draw[gray!70, semithick, dashed] (c1) -- (c2) -- (c3) -- (c4) -- (c5) -- (c6) -- (c7) -- (c8) -- (c9) -- (c10) -- (c11);
+\draw[blue!65!black, semithick] (c8) -- (c7);
+\draw[blue!65!black, semithick] (c8) -- (c3);
+\draw[blue!65!black, semithick] (c7) -- (c108);
+\draw[blue!65!black, semithick] (c6) -- (c108);
+\draw[blue!65!black, semithick] (c6) -- (c11);
+\draw[blue!65!black, semithick] (c5) -- (c10);
+\draw[blue!65!black, semithick] (c4) -- (c9);
+
+% --- Sweeping Zoom Arrow from C_8 (Macro) to Company 8 (Micro) ---
+\draw[->, very thick, blue!75!black] (c8.west) to[out=165, in=210, looseness=1.15] (-1.6, -0.6);
+
+% --- Macro Annotations (Right Side) ---
+\node[annot] (cap_note) at (5.3, -10.2) {Node size represents\\market capitalization\\$\left(M(C_1) \le \dots \le M(C_{108})\right)$};
+\draw[->, semithick, black!75] (2.6, -10.2) -- (cap_note.west);
+
+\node[annot] (conn_note) at (5.8, -7.9) {Macro connections $\Emacro(\Omega)$\\evaluated across all pairs;\\some nodes may remain\\unconnected under $\Omega$};
+\draw[gray!80, thick] (4.0, -7.1) -- (4.0, -8.7);
+
+\end{tikzpicture}%
+}
+\caption{Schematic of the two-layer Hierarchical Network of Networks $\Hnet$. \textbf{Bottom (Macro-Level):} The static cohort of $N=108$ QQQ firms ($C_1, \dots, C_{108}$) ordered in a spiral of increasing market capitalization, where node size reflects market cap and inter-firm edges $\Emacro(\Omega)$ are projected dynamically based on the selected coupling criterion $\Omega$. \textbf{Top (Micro-Level):} Intra-firm hierarchical sub-graph $\Gmicro$ for representative node \texttt{Company 8} ($C_8$), illustrating the four primary functional hubs (\texttt{Competitor}, \texttt{Risk}, \texttt{Product/Services}, and \texttt{Geographic \& Other Revenue}), operating segment nodes ($\text{Segment}_a, \dots, \text{Segment}_n$) endowed with quantitative financial attributes, and terminal entity leaves.}
+\label{fig:micro_macro_schema}
+\end{figure}
