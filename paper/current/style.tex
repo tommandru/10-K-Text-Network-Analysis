@@ -1,0 +1,49 @@
+% =========================================================================
+% style.tex - Packages, Page Geometry, and Custom Network Macros
+% =========================================================================
+
+% --- Page Geometry (1-inch margins on all sides, single-spaced) ---
+% Note: Comment out the \usepackage[margin=1in]{geometry} line if switching to svproc.cls
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\singlespacing
+
+% --- Core Typography & Encoding ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{times} % Clean compact serif font similar to conference proceedings
+
+% --- Math & Network Notation Packages ---
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{bm}
+
+% --- Figures, Subfigures, and TikZ Diagrams ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, calc}
+
+% --- Tables ---
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tabularx}
+
+% --- Code / JSON Snippets & Hyperlinks ---
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[colorlinks=true, allcolors=blue!70!black]{hyperref}
+
+% --- Compatibility Macro if Compiling with Standard 'article' Class ---
+\providecommand{\inst}[1]{\textsuperscript{#1}}
+\providecommand{\keywords}[1]{\vspace{0.5em}\noindent\textbf{Keywords:} #1}
+
+% --- Custom Shorthand Macros for Your Network Math ---
+\newcommand{\Hnet}{\mathcal{H}^{(t)}}
+\newcommand{\Gmacro}{G_{\text{macro}}^{(t)}}
+\newcommand{\Gmicro}{G_{i,\text{micro}}^{(t)}}
+\newcommand{\Vmacro}{V_{\text{macro}}}
+\newcommand{\Emacro}{E_{\text{macro}}^{(t)}}

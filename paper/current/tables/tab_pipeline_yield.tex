@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\caption{Summary of the Sequential Tranche Cohort Filtering and Parsing Pipeline (2021--2025).}
+\label{tab:pipeline_yield}
+\small
+\begin{tabular}{@{}llrr@{}}
+\toprule
+\textbf{Pipeline Stage} & \textbf{Filtering / Extraction Criterion} & \textbf{Input Pool} & \textbf{Retained Output} \\ 
+\midrule
+Tranche 1.1 & Quarterly QQQ Form N-PORT Filings (\texttt{S000101292}) & 5 Years (2021--2025) & 20 Filings \\
+Tranche 1.2 & Country Filter (\texttt{country == 'US'}) \& Unique ISINs & Raw N-PORT Holdings & 120 Unique CIKs \\
+Tranche 1.3 & Longitudinal 5-Year Form 10-K Continuity Audit & 120 Unique CIKs & \textbf{108 Static Firms} \\
+\midrule
+Tranche 2.1 & Narrative Section Parsing (Items 1 \& 1A via \texttt{edgartools} + custom regex) & 540 Firm-Year 10-Ks & 540 Text Pairs \\
+Tranche 2.2 & Financial Statement Validation Pool (4 XBRL types $\times$ 540 filings) & Items 7 \& 8 Tables & 2,160 Instances \\
+Tranche 2.3 & 3-Stage Fallback Resolution (XBRL $\rightarrow$ Keyword $\rightarrow$ HTML \texttt{str.split}) & 540 Firm-Year 10-Ks & 540 Financial Blocks \\
+\midrule
+Tranche 3.0 & LLM Nested JSON Serialization (Products, Competitors, Risk, Segment/Geo Rev) & 540 Parsed Filings & \textbf{[TBD] Validated JSONs} \\
+\bottomrule
+\end{tabular}
+\end{table}

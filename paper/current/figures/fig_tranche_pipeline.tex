@@ -1,0 +1,79 @@
+\begin{figure}[htbp]
+\centering
+\resizebox{0.96\textwidth}{!}{%
+\begin{tikzpicture}[
+    >=Stealth,
+    % Column Header Style
+    colhdr/.style={font=\footnotesize\bfseries\scshape, text=black!85, align=center},
+    % 3-Shade B&W Print-Safe Node Styles (Matching Figure 2)
+    innode/.style={rectangle, rounded corners=4pt, draw=black!80, semithick, fill=white, text width=3.8cm, minimum height=1.35cm, align=center, font=\footnotesize},
+    procnode/.style={rectangle, rounded corners=4pt, draw=black!90, very thick, fill=gray!14, text width=5.4cm, minimum height=1.35cm, align=center, font=\footnotesize},
+    outnode/.style={rectangle, rounded corners=4pt, draw=black!95, double, double distance=1.2pt, thick, fill=gray!26, text width=4.0cm, minimum height=1.35cm, align=center, font=\footnotesize\bfseries},
+    % Arrows
+    harrow/.style={-{Stealth[length=2.8mm, width=2mm]}, thick, draw=black!85},
+    varrow/.style={-{Stealth[length=3.0mm, width=2.2mm]}, ultra thick, draw=black!90},
+    gatelabel/.style={font=\scriptsize\itshape, fill=white, inner sep=1.5pt, text=black!85}
+]
+
+% =========================================================================
+% COLUMN HEADERS
+% =========================================================================
+\node[colhdr] at (-5.4, 1.15) {Stage Input};
+\node[colhdr] at (0.0, 1.15) {Sequential Tranche Process};
+\node[colhdr] at (5.6, 1.15) {Validated Gate Output};
+\draw[black!60, semithick] (-7.5, 0.85) -- (7.8, 0.85);
+
+% =========================================================================
+% TRANCHE 1 (ROW 1)
+% =========================================================================
+\node[innode] (in1) at (-5.4, 0.0) {Quarterly QQQ\\Form N-PORT Filings\\(2021--2025)};
+\node[procnode] (pr1) at (0.0, 0.0) {\textbf{Tranche 1: Static Cohort List}\\U.S.\ Domicile Filter \& 5-Year\\10-K Continuity Audit};
+\node[outnode] (out1) at (5.6, 0.0) {108 Static U.S.\ Firms\\(Verified CIKs)};
+
+\draw[harrow] (in1) -- (pr1);
+\draw[harrow] (pr1) -- (out1);
+
+% =========================================================================
+% TRANCHE 2 (ROW 2)
+% =========================================================================
+\node[innode] (in2) at (-5.4, -2.3) {540 Annual SEC\\Form 10-K Filings\\(Items 1, 1A, 7, 8)};
+\node[procnode] (pr2) at (0.0, -2.3) {\textbf{Tranche 2: Section-Level Parsing}\\Programmatic Narrative Extraction \&\\3-Stage Financial Table Fallback};
+\node[outnode] (out2) at (5.6, -2.3) {540 Verified Text \&\\Revenue Table Blocks};
+
+\draw[harrow] (in2) -- (pr2);
+\draw[harrow] (pr2) -- (out2);
+
+% Waterfall Gate 1 -> 2
+\draw[varrow] (pr1.south) -- node[gatelabel, right=3pt] {Gate 1 Clears} (pr2.north);
+
+% =========================================================================
+% TRANCHE 3 (ROW 3)
+% =========================================================================
+\node[innode] (in3) at (-5.4, -4.6) {Unstructured Narratives\\\& Segmented Tables\\+ Filing Metadata};
+\node[procnode] (pr3) at (0.0, -4.6) {\textbf{Tranche 3: LLM JSON Serialization}\\Schema-Enforced Entity \& Financial\\Attribute Tree Extraction};
+\node[outnode] (out3) at (5.6, -4.6) {540 Nested Firm\\JSON Schemas};
+
+\draw[harrow] (in3) -- (pr3);
+\draw[harrow] (pr3) -- (out3);
+
+% Waterfall Gate 2 -> 3
+\draw[varrow] (pr2.south) -- node[gatelabel, right=3pt] {Gate 2 Clears} (pr3.north);
+
+% =========================================================================
+% TRANCHE 4 (ROW 4)
+% =========================================================================
+\node[innode] (in4) at (-5.4, -6.9) {Validated JSON Trees,\\Market Cap ($M$) \&\\10-K Filing Dates ($d_{\text{file}}$)};
+\node[procnode] (pr4) at (0.0, -6.9) {\textbf{Tranche 4: Network Construction}\\Two-Scale Hierarchical Graph\\Instantiation ($\Hnet$)};
+\node[outnode] (out4) at (5.6, -6.9) {Macro Network $\Gmacro$\\\& Micro Sub-Graphs $\Gmicro$};
+
+\draw[harrow] (in4) -- (pr4);
+\draw[harrow] (pr4) -- (out4);
+
+% Waterfall Gate 3 -> 4
+\draw[varrow] (pr3.south) -- node[gatelabel, right=3pt] {Gate 3 Clears} (pr4.north);
+
+\end{tikzpicture}%
+}
+\caption{Sequential four-tranche waterfall architecture for data extraction and hierarchical network construction (2021--2025). Each tranche operates as a dependency-driven validation gate: \textbf{Tranche 1} filters 20 quarterly QQQ Form N-PORT filings (\texttt{S000101292}) from 120 unique U.S.\ ISINs down to $N=108$ continuous Form 10-K filers; \textbf{Tranche 2} parses Item 1 and Item 1A narratives via \texttt{edgartools} and custom string rules while resolving Item 7 and Item 8 segment and geographic revenue tables across 2,160 XBRL instances via a three-stage fallback pipeline (XBRL $\rightarrow$ keyword parser $\rightarrow$ native HTML \texttt{str.split}); \textbf{Tranche 3} utilizes an LLM workflow to serialize Products/Services, Competitors, Risks, Segment/Region Revenues, and 10-K filing dates into a nested JSON schema; and \textbf{Tranche 4} instantiates the intra-firm micro-networks $\Gmicro$ and attribute-driven macro-network $\Gmacro$.}
+\label{fig:tranche_pipeline}
+\end{figure}

@@ -1,0 +1,59 @@
+\section{Tranche 4: Hierarchical Network Construction}
+\label{sec:network_model}
+
+In the final tranche, the validated JSON trees from Tranche~3 are instantiated into a longitudinal \textbf{Hierarchical Network of Networks} across the five annual snapshots $t \in \{2021, 2022, 2023, 2024, 2025\}$. For each year $t$, the multi-scale system is formally defined as:
+\begin{equation}
+    \Hnet = \left( \Gmacro, \; \left\{ \Gmicro \right\}_{i=1}^{N} \right), \quad N = 108
+\end{equation}
+where $\Gmacro$ denotes the macroscopic inter-firm network over the static cohort of $N=108$ QQQ firms, and each macro-node $C_i \in \Vmacro$ encapsulates a rooted intra-firm micro-network $\Gmicro$ (Fig.~\ref{fig:micro_macro_schema}).
+
+\input{figures/fig_micro_macro.tex}
+
+\subsection{Micro-Level Topology: Intra-Firm Sub-Networks}
+For each corporation $C_i$ ($i \in \{1, \dots, 108\}$) in year $t$, the intra-firm topology is modeled as a rooted, multi-branch hierarchical graph:
+\begin{equation}
+    \Gmicro = \left( V_i^{(t)}, \; E_i^{(t)}, \; \mathbf{A}_i^{(t)} \right)
+\end{equation}
+centered on the company root vertex $r_i$, which stores firm-level metadata including the company's Central Index Key (CIK), annual market capitalization $M(C_i^{(t)})$, and exact \textbf{Form 10-K filing date} $d_{\text{file}}(C_i^{(t)})$. As depicted in the top panel of Fig.~\ref{fig:micro_macro_schema}, the vertex set $V_i^{(t)}$ is partitioned into four hierarchical tiers radiating outward from $r_i$:
+\begin{equation}
+    V_i^{(t)} = \{r_i\} \cup V_{i,\text{hub}} \cup V_{i,\text{inter}}^{(t)} \cup V_{i,\text{leaf}}^{(t)}
+\end{equation}
+
+\begin{enumerate}
+    \item \textbf{Primary Category Hubs ($V_{i,\text{hub}}$):} Four first-tier functional hubs connect directly to the company root $r_i$:
+    \begin{equation*}
+        V_{i,\text{hub}} = \left\{ v_{\text{prod}}, \; v_{\text{comp}}, \; v_{\text{risk}}, \; v_{\text{geo}} \right\}
+    \end{equation*}
+    representing \texttt{Product/Services}, \texttt{Competitor}, \texttt{Risk}, and \texttt{Geographic \& Other Revenue}, respectively.
+    
+    \item \textbf{Intermediate Segment and Partition Nodes ($V_{i,\text{inter}}^{(t)}$):} The second structural tier organizes disclosures by operating segment and firm-wide scope:
+    \begin{itemize}
+        \item Under the \texttt{Product/Services} hub ($v_{\text{prod}}$), edges branch directly into the firm's active operating segments $S_i^{(t)} = \{\text{Segment}_a, \text{Segment}_b, \dots, \text{Segment}_n\}$. Each segment node $s \in S_i^{(t)}$ carries a quantitative \textbf{Financial Attribute} $w_{\text{rev}}(s) \in \mathbf{A}_i^{(t)}$ corresponding to its reported segment revenue from Items~7 and~8.
+        \item Under both \texttt{Competitor} ($v_{\text{comp}}$) and \texttt{Risk} ($v_{\text{risk}}$), the hierarchy first bifurcates into a \texttt{Segment} partition node---which subsequently branches into the segment set $S_i^{(t)}$---and a general partition node (\texttt{Others} for unsegmented enterprise-wide competitors; \texttt{Other / External} for macroeconomic, regulatory, or systemic risks).
+        \item Under \texttt{Geographic \& Other Revenue} ($v_{\text{geo}}$), the branch bifurcates into \texttt{Geographic} and \texttt{Other} revenue partition nodes.
+    \end{itemize}
+
+    \item \textbf{Entity Leaf Nodes ($V_{i,\text{leaf}}^{(t)}$):} The terminal layer contains the granular operational and geographic entities extracted in Tranche~3:
+    \begin{itemize}
+        \item \textit{Product/Service Leaves:} Granular offerings (e.g., $\text{Prod/Services}_{a,d,e}$) connected to one or more parent segments in $S_i^{(t)}$, permitting cross-segment product sharing.
+        \item \textit{Competitor and Risk Leaves:} Specific named competitors and granular risk factors (depicted as shaded circular leaf nodes in Fig.~\ref{fig:micro_macro_schema}) attached either to their corresponding operating segment $\text{Segment}_k$ or to the \texttt{Others} / \texttt{Other/External} branch.
+        \item \textit{Geographic Region Leaves:} Region-level nodes ($\text{Region}_a, \text{Region}_b, \dots, \text{Region}_n$, representing individual countries or broader continental regions depending on how the filer reports geographic disaggregation) and an aggregated $\text{Rest}$ node under the \texttt{Geographic} branch, annotated with revenue attributes from Items~7 and~8.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Macro-Level Topology: Attribute- and Micro-Graph-Driven Connectivity}
+At the macroscopic scale, the inter-firm network in year $t$ is defined over the fixed node set $\Vmacro = \{C_1, C_2, \dots, C_{108}\}$:
+\begin{equation}
+    \Gmacro = \left( \Vmacro, \; \Emacro, \; \mathbf{A}_{\text{macro}}^{(t)} \right)
+\end{equation}
+Each macro-node $C_i \in \Vmacro$ is endowed with macro-level attributes $\mathbf{a}_i^{(t)} \in \mathbf{A}_{\text{macro}}^{(t)}$, notably its annual market capitalization $M(C_i^{(t)})$ and its \textbf{Form 10-K filing date} $d_{\text{file}}(C_i^{(t)})$ (capturing fiscal calendar alignment and reporting timing). As illustrated in the bottom panel of Fig.~\ref{fig:micro_macro_schema}, macro-nodes in each snapshot $t$ are visually arranged in a spiral of increasing market capitalization:
+\begin{equation}
+    M\!\left(C_1^{(t)}\right) \le M\!\left(C_2^{(t)}\right) \le \dots \le M\!\left(C_{108}^{(t)}\right)
+\end{equation}
+where node size is proportional to $M(C_i^{(t)})$.
+
+Crucially, rather than restricting $\Gmacro$ to a single fixed connectivity rule, our framework allows the macro-edge set $\Emacro$ to emerge flexibly from any chosen combination of firm-level attributes $\mathbf{A}_{\text{macro}}^{(t)}$ and the underlying micro-networks $\{\Gmicro\}_{i=1}^{108}$:
+\begin{equation}
+    e_{ij}^{(t)} = f\!\left(\mathbf{a}_i^{(t)}, \, \mathbf{a}_j^{(t)}, \, \Gmicro, \, G_{j,\text{micro}}^{(t)}\right)
+\end{equation}
+where $f(\cdot)$ represents the selected relational mapping---such as shared risk exposures, direct competitor citations, product/sector overlap, geographic revenue co-exposure, or reporting-period alignment via 10-K filing dates. Because pairwise relationships are induced directly from empirical firm attributes and micro-graph structures across all $\binom{108}{2} = 5,778$ pairs, the macro-topology naturally adapts to the analytical dimension of interest while allowing firms with no structural overlap under a given criterion (e.g., node $C_{11}$ in Fig.~\ref{fig:micro_macro_schema}) to remain unconnected.

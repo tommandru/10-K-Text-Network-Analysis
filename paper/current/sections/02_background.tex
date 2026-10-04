@@ -1,0 +1,17 @@
+\section{Related Work and Empirical Scope}
+\label{sec:background}
+
+\subsection{Related Work}
+Our framework intersects three research streams across complex networks and computational finance:
+
+\paragraph{Financial and Text-Based Competition Networks.}
+Early empirical financial networks relied on return cross-correlations to extract minimum spanning trees and hierarchical clusters among equities~\cite{mantegna1999}, later extending to distress propagation and DebtRank in credit networks~\cite{battiston2012} and global corporate ownership~\cite{vitali2011}. Moving beyond market prices, Hoberg and Phillips~\cite{hoberg2016} pioneered Text-Based Network Industry Classifications (TNIC) by computing pairwise cosine similarities over Item~1 product descriptions in SEC Form 10-K filings. While TNIC demonstrates the value of 10-K narratives for mapping inter-firm topology, it treats each firm as a single bag-of-words vector rather than resolving internal segment hierarchies, risk topologies, and revenue weights.
+
+\paragraph{Multilayer and Hierarchical Network Formalisms.}
+Theoretical advances in multilayer~\cite{boccaletti2014,kivela2014} and interdependent networks of networks~\cite{gao2012} have shown that structural coupling across scales fundamentally alters percolation, robustness, and cascade dynamics. In financial systems, multiplex frameworks have been used to disentangle distinct interaction layers such as overnight loans versus security holdings~\cite{bargigli2015}. However, empirical datasets that explicitly instantiate an internal, heterogeneous sub-graph inside every macroscopic corporate node remain scarce due to the difficulty of aligning internal segment accounting with narrative disclosures.
+
+\paragraph{Automated Extraction and LLMs in Financial Filings.}
+Computational analysis of SEC filings has traditionally focused on sentiment dictionaries~\cite{loughran2011} or standalone XBRL table scraping. Because filers frequently alter custom XBRL taxonomies or embed segment footnotes inside unstructured HTML tables, single-pass scrapers suffer from high missing-data attrition in longitudinal panels. Recent domain-specific and general-purpose LLMs~\cite{wu2023} provide strong capabilities for zero-shot entity extraction and relational mapping, enabling the joint serialization of narrative and tabular 10-K sections when embedded within a multi-stage verification pipeline.
+
+\subsection{Empirical Scope: The Invesco QQQ Trust Cohort}
+To ground our hierarchical network in a high-impact economic ecosystem, we examine corporations tracked by the \textbf{Invesco QQQ Trust}. Established on March 10, 1999, the Invesco QQQ Trust is an exchange-traded fund (ETF) that passively tracks the Nasdaq-100 Index, comprising the 100 largest non-financial corporations listed on The Nasdaq Stock Market by market capitalization. Consequently, the trust exhibits a high concentration in technology- and innovation-driven sectors, capturing large-cap leaders across information technology, communication services, consumer retail, healthcare, and industrials. Analyzing the QQQ cohort from 2021 to 2025 provides an ideal empirical setting for hierarchical network construction, as these enterprises operate across multiple overlapping product segments, share complex global supply and geographic revenue footprints, and disclose rapidly evolving technological and regulatory risks.
