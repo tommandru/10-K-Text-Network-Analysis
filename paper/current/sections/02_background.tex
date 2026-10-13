@@ -1,0 +1,10 @@
+\section{Background and Related Work}
+\label{sec:background}
+
+Our framework intersects the domains of financial network modeling, natural language processing (NLP) in accounting, and multi-layer network theory.
+
+\textbf{Financial and Text-Based Networks:} Traditional financial networks rely on structured numeric data, such as cross-shareholdings, interbank loans, or correlation matrices of asset returns \cite{mantegna1999, battiston2012, vitali2011}. More recently, researchers have pioneered text-based industry classifications. Hoberg and Phillips \cite{hoberg2016} demonstrated that parsing product descriptions from SEC 10-K filings generates dynamic, text-based network industries that outperform static SIC/NAICS codes in predicting competitor behavior. Similarly, Loughran and McDonald \cite{loughran2011} established foundational sentiment dictionaries for parsing 10-K narratives. However, these text-based models generally collapse the entire document into a single vector embedding per firm, discarding the internal hierarchical structure of the reporting segments.
+
+\textbf{Multi-Layer and Network of Networks:} In complex systems theory, a ``Network of Networks'' (NoN) or multi-layer network describes systems where nodes themselves contain internal topologies, or where nodes interact across multiple distinct relational layers \cite{gao2012, kivela2014, boccaletti2014}. While these frameworks are extensively used in infrastructure and ecological modeling \cite{bargigli2015}, their application to corporate financial structures is limited by the lack of granular, standardized datasets linking intra-firm operations to inter-firm connections.
+
+\textbf{LLMs in Financial Extraction:} The advent of Large Language Models (LLMs) has vastly improved information extraction from financial texts \cite{wu2023}. Yet, applying LLMs to 10-K filings frequently results in entity hallucination or loss of mathematical constraints. Our methodology bridges this gap by constraining the LLM serialization process within a strict relational database schema, enforcing exact textual lineage and accounting invariants to guarantee dataset fidelity.
