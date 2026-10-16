@@ -1,0 +1,37 @@
+\section{Technical Validation and Corpus Fidelity}
+\label{sec:validation}
+
+To validate the SEC 10-K Knowledge Graph for quantitative network research, we audited the multi-scale database across four dimensions: LLM extraction fidelity, structural accounting alignment, inter-firm edge resolution, and longitudinal stability across the 2021--2025 panel.
+
+\input{tables/tab_entity_summary.tex}
+
+\subsection{LLM Grounding and Hallucination Suppression}
+A primary barrier to utilizing LLMs in financial network construction is the risk of entity hallucination. Our pipeline mitigates this by enforcing strict textual lineage: every extracted entity must be mapped to a precise paragraph block tag (e.g., \texttt{[B0014]}) from the parsed HTML. 
+
+An audit of the extracted Dual-Scope Risk Taxonomy (Table [7]) reveals exceptional model fidelity. Across the 108-firm cohort, the pipeline extracted 19,496 distinct composite risk nodes. Of these, 19,479 nodes (99.91\%) successfully resolved their lineage tags directly back to the original source text blocks. Only 17 instances (0.09\%) failed the grounding audit and were programmatically quarantined. This 99.91\% grounding validity demonstrates that carefully constrained LLMs can extract high-fidelity graph structures from regulatory filings.
+
+\subsection{Accounting Invariant and Financial Bridge Fidelity}
+To guarantee that narrative micro-networks accurately reflect the underlying economic scale of the firm, the pipeline must bridge unstructured narrative segments to audited WRDS financials. 
+
+Enforcing the \texttt{node\_role = 'OPERATING'} safeguard, our pipeline successfully aligned \$42.41 trillion (\$42,410,812.12 million) in cumulative operating revenue directly to narrative product segments. Evaluating the \texttt{link\_method} mechanics reveals that 74.7\% (2,236) of these financial rows required LLM-driven contextual mapping (\texttt{TIER3\_LLM}) to reconcile discrepancies between accounting taxonomy and narrative phrasing, while 25.3\% (756) remained unlinked or resolved to unallocated corporate overhead. 
+
+\subsection{Inter-Firm Entity Resolution and Market Competition}
+To construct the macroscopic competitive topology ($\Gmacro$), the pipeline extracted 7,904 distinct competitive threats (Table [5]). Using the \texttt{mention\_type} constraint, the schema differentiates between direct citations and broader industry pressures:
+\begin{itemize}
+    \item \textbf{Explicit Ties (30.3\%):} 2,397 nodes represent threats explicitly cited by management. We observe that this bucket captures a mixture of highly specific named corporate peers (e.g., \texttt{NVIDIA Corporation}, \texttt{TSMC}) as well as explicit categorical competitors (e.g., \texttt{Software companies}). Consequently, constructing the rigid $\mathcal{E}_{\text{rival}}$ peer-to-peer adjacency matrix requires a standard Entity Resolution (ER) pass to isolate named corporate actors from broader sector citations.
+    \item \textbf{Inferred Ties (69.7\%):} 5,507 nodes were classified as inferred or substitute market pressures (e.g., \texttt{legacy on-premise solutions}).
+\end{itemize}
+
+Crucially, the schema's bifurcated routing solves the ``hairball'' density problem common in corporate text networks. Of the 1,843 competitive segment hubs extracted, 72.6\% (1,339) were successfully bridged to specific operational divisions, while only 27.4\% (504) were enterprise-wide threats. Risk routing exhibited identical precision: of the 1,883 risk segment hubs, 71.0\% (1,337) were routed as specific operational threats (\texttt{is\_company\_wide = False}), isolating local exposures from systemic risk.
+
+\subsection{Illustrative Micro-Graph \& Longitudinal Stability}
+
+\input{tables/tab_descriptive_stats.tex}
+
+A core premise of our hierarchical framework is that corporations are not static atomic nodes, but highly dynamic architectures that continuously rewire their internal topologies. The scale of this internal complexity is substantial: as shown in Table~\ref{tab:descriptive_stats}, the average firm-year snapshot in our dataset contains 24.4 distinct product leaves, 14.8 competitor nodes, and 36.1 isolated risk factors, with massive variance driven by diversified conglomerates.
+
+To demonstrate the schema's resolution and the critical necessity of temporal modeling, consider the longitudinal trajectory of Advanced Micro Devices, Inc. (AMD) between 2021 and 2025. In 2021, AMD's operating segments were fundamentally product-centric (e.g., \textit{CPUs and APUs}, \textit{Graphics Products}). However, in 2022, following strategic market shifts and the acquisition of Xilinx, the firm completely rewired its internal architecture into end-market divisions: \textit{Data Center}, \textit{Client}, \textit{Gaming}, and \textit{Embedded}. This structure evolved again in 2025, when the firm consolidated its consumer footprint into a unified \textit{Client and Gaming} segment.
+
+Traditional network models treating AMD as a static node would fail to capture these strategic pivots, resulting in a loss of granular financial routing. In our $\Hnet$ framework, the intra-firm $\mathcal{E}_{\text{temp}}$ temporal successor edges explicitly track this structural drift. They maintain the longitudinal linkage of external pressures—such as routing NVIDIA's competitive threat from the 2021 \textit{Graphics} segment directly into the 2022 \textit{Gaming} and 2025 \textit{Client and Gaming} segments—preventing structural breakage. 
+
+An audit of the 815 unique Company-Segment pairs across the entire 2021--2025 cohort empirically validates this volatility. Only 13.37\% (109 segments) remained perfectly stable across all five years. The vast majority---76.93\% (627 segments)---were ephemeral, existing for three years or fewer due to corporate restructurings, M\&A activity, and strategic realignments. This severe internal volatility empirically proves that quantitative network models must account for intra-firm architectural drift to accurately model multi-year financial ecosystems.

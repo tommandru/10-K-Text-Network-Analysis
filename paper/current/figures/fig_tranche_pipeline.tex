@@ -1,0 +1,57 @@
+\begin{figure}[htbp]
+\centering
+\resizebox{0.95\linewidth}{!}{%
+\begin{tikzpicture}[
+    >=Stealth,
+    box/.style={rectangle, draw=black!80, thick, fill=gray!5, minimum width=3.8cm, minimum height=0.9cm, align=center, font=\small\linespread{0.9}\selectfont, rounded corners=3pt},
+    process/.style={rectangle, draw=black!100, very thick, fill=white, minimum width=5.2cm, minimum height=0.9cm, align=center, font=\small\bfseries\linespread{0.9}\selectfont, rounded corners=4pt},
+    arrow/.style={->, thick, draw=black!80}
+]
+
+% Headers
+\node[font=\footnotesize\bfseries\scshape] (h1) at (0, 0) {Stage Input};
+\node[font=\footnotesize\bfseries\scshape] (h2) at (5.4, 0) {Sequential Tranche Process};
+\node[font=\footnotesize\bfseries\scshape] (h3) at (10.8, 0) {Validated Gate Output};
+
+\draw[semithick, black!70] (-2.2, -0.4) -- (13.0, -0.4);
+
+% Row 1
+\node[box] (in1) at (0, -1.2) {Quarterly QQQ\\N-PORT Filings};
+\node[process] (t1) at (5.4, -1.2) {Tranche 1:\\Static Cohort Extraction};
+\node[box] (out1) at (10.8, -1.2) {108 Static U.S. Firms\\(540 Firm-Years)};
+
+\draw[arrow] (in1) -- (t1);
+\draw[arrow] (t1) -- (out1);
+
+% Row 2
+\node[box] (in2) at (0, -2.7) {540 Form 10-K\\Base Documents};
+\node[process] (t2) at (5.4, -2.7) {Tranche 2:\\Parsing \& 3-Stage Fallback};
+\node[box] (out2) at (10.8, -2.7) {Cleaned HTML Narratives\\\& ASC 280 Financials};
+
+\draw[arrow] (in2) -- (t2);
+\draw[arrow] (t2) -- (out2);
+\draw[arrow, rounded corners=4pt] (out1.south) -- ++(0,-0.3) -| (in2.north);
+
+% Row 3
+\node[box] (in3) at (0, -4.2) {Unstructured Text\\\& XBRL Tables};
+\node[process] (t3) at (5.4, -4.2) {Tranche 3:\\LLM JSON Serialization};
+\node[box] (out3) at (10.8, -4.2) {10-Table Relational\\ER Database Schema};
+
+\draw[arrow] (in3) -- (t3);
+\draw[arrow] (t3) -- (out3);
+\draw[arrow, rounded corners=4pt] (out2.south) -- ++(0,-0.3) -| (in3.north);
+
+% Row 4
+\node[box] (in4) at (0, -5.7) {Structured JSON\\Entity Objects};
+\node[process] (t4) at (5.4, -5.7) {Tranche 4:\\Multi-Scale Graph Formulation};
+\node[box] (out4) at (10.8, -5.7) {Hierarchical Networks\\$\mathcal{G}_{\text{micro}}^{(t)}$ and $\mathcal{G}_{\text{macro}}^{(t)}$};
+
+\draw[arrow] (in4) -- (t4);
+\draw[arrow] (t4) -- (out4);
+\draw[arrow, rounded corners=4pt] (out3.south) -- ++(0,-0.3) -| (in4.north);
+
+\end{tikzpicture}%
+}
+\caption{Sequential data ingestion and graph formulation pipeline. The architecture utilizes a four-tranche waterfall design, progressing from raw N-PORT EDGAR extraction to LLM serialization and final micro/macro network instantiation.}
+\label{fig:tranche_pipeline}
+\end{figure}

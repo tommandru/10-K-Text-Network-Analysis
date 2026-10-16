@@ -1,0 +1,60 @@
+\section{Tranche 4: Multi-Scale Graph Formulation}
+\label{sec:network_model}
+
+In Tranche 4, the validated schema-conforming JSON objects are instantiated into a longitudinal \textbf{SEC 10-K Knowledge Graph}. For each annual snapshot $t$, the system is modeled as a directed, typed, attributed multi-graph: $\mathcal{G}^{(t)} = ( \mathcal{V}^{(t)}, \mathcal{E}^{(t)}, \Phi, \Psi )$, where $\Phi$ and $\Psi$ map nodes and edges to their types and attributes.
+
+\input{figures/fig_micro_macro.tex}
+
+\subsection{Micro-Level Topology: Node Sets \& 4 Radial Subgraphs}
+For each company filing snapshot $i$ in year $t$, the micro-level topology is defined over a vertex set corresponding directly to the schema tables. The root node $v_{\text{comp}}$ stores metadata including the CIK, market capitalization $M(v_{\text{comp}})$, and exact Form 10-K filing date $d_{\text{file}}(v_{\text{comp}})$. The intra-firm network $G_{i,\text{micro}}^{(t)}$ is constructed via primary radial subgraphs:
+
+\begin{enumerate}
+    \item \textbf{Narrative Product Hierarchy (Tables [2] \& [3]):} Modeling management's description of operations, operating segments $\mathcal{V}_{\text{pseg}}$ [2] branch from the company root $v_{\text{comp}}$, subsequently branching into atomic product offerings $\mathcal{V}_{\text{prod}}$ [3]:
+    \begin{equation}
+        \mathcal{E}_{\text{prod\_hier}} = \left\{ (v_{\text{comp}}, v_p) \in \{v_{\text{comp}}\} \times \mathcal{V}_{\text{pseg}} \right\} \cup \left\{ (v_p, v_{pr}) \in \mathcal{V}_{\text{pseg}} \times \mathcal{V}_{\text{prod}} \right\}
+    \end{equation}
+    
+    \item \textbf{Market Competition (Tables [4] \& [5]):} Connecting competitors directly to specific divisions, $v_{\text{comp}}$ branches into competitor segment nodes $\mathcal{V}_{\text{cseg}}$ [4], which link to atomic competitor nodes $\mathcal{V}_{\text{cmpt}}$ [5]:
+    \begin{equation}
+        \mathcal{E}_{\text{comp\_hier}} = \left\{ (v_{\text{comp}}, v_{cs}) \in \{v_{\text{comp}}\} \times \mathcal{V}_{\text{cseg}} \right\} \cup \left\{ (v_{cs}, v_{cm}) \in \mathcal{V}_{\text{cseg}} \times \mathcal{V}_{\text{cmpt}} \right\}
+    \end{equation}
+    with $\mathcal{E}_{\text{comp\_bridge}} = \{ (v_{cs}, v_p) \in \mathcal{V}_{\text{cseg}} \times \mathcal{V}_{\text{pseg}} \}$ linking competitor and product segment nodes.
+
+    \item \textbf{Dual-Scope Risk Taxonomy (Tables [6], [7] \& [8]):} High-level categories $\mathcal{V}_{\text{rcat}}$ [6] connect to composite risk nodes $\mathcal{V}_{\text{risk}}$ [7]. Risks are classified as enterprise-wide or segment-specific via M:N risk-segment bridges [8]:
+    \begin{align}
+        \mathcal{E}_{\text{risk\_bridge}} &= \left\{ (v_r, v_p) \in \mathcal{V}_{\text{risk}} \times \mathcal{V}_{\text{pseg}} \mid \neg v_r.\text{is\_company\_wide} \right\} \\
+        \mathcal{E}_{\text{risk\_corp}} &= \left\{ (v_r, v_{\text{comp}}) \in \mathcal{V}_{\text{risk}} \times \{v_{\text{comp}}\} \mid v_r.\text{is\_company\_wide} \right\}
+    \end{align}
+
+    \item \textbf{WRDS Business Financials (Table [9]):} Quantitative ASC 280 segment financial nodes $\mathcal{V}_{\text{wbus}}$ [9] map N:1 to product segments:
+    \begin{equation}
+        \mathcal{E}_{\text{fin}} = \left\{ (v_{wb}, v_p) \in \mathcal{V}_{\text{wbus}} \times \mathcal{V}_{\text{pseg}} \mid v_{wb}.\text{node\_role} = \text{'OPERATING'} \right\}
+    \end{equation}
+    which isolates active operating revenues while quarantining \texttt{CORPORATE} and \texttt{ELIMINATION} roles to protect mathematical integrity.
+\end{enumerate}
+
+\subsection{Accounting Invariants \& Risk Weighting}
+To guarantee segment allocations derive solely from verified operational nodes while preserving total SEC-reported figures, the micro-graph enforces \textbf{Enterprise Revenue Preservation} for any company snapshot at filing period $t$:
+\begin{equation}
+    \text{Revenue}(v_{\text{comp}}, t) = \sum_{\substack{v \in \mathcal{V}_{\text{wbus}} \\ v.\text{node\_role} = \text{'OPERATING'}}} v.\text{sales} + \sum_{\substack{u \in \mathcal{V}_{\text{wbus}} \\ u.\text{node\_role} \in \{\text{'CORP'}, \text{'ELIM'}\}}} u.\text{sales}
+\end{equation}
+To ensure mathematical balance, our ingestion pipeline explicitly handles negative integer values from inter-segment eliminations. Consequently, the \textbf{Financial Risk Exposure Weighting} $\Omega(v_r)$ maps risk exposures to their financial scale without orphan gaps:
+\begin{equation}
+    \Omega(v_r) = \begin{cases} 
+        \sum_{(v_r, v_p) \in \mathcal{E}_{\text{risk\_bridge}}} v_p.\text{revenue}, & \text{if } \neg v_r.\text{is\_company\_wide} \\ 
+        \text{Revenue}(v_{\text{comp}}, t), & \text{if } v_r.\text{is\_company\_wide} 
+    \end{cases}
+\end{equation}
+
+\subsection{Macro-Level Topology: Inter-Firm \& Temporal Axes}
+At the macroscopic scale, the individual snapshot graphs $G_{i,\text{micro}}^{(t)}$ interlock across temporal and competitive boundaries to form the global macro-layer: $\mathcal{G}_{\text{macro}}^{(t)}$. The macro-edge set is defined as the union of temporal, competitive, and semantic projections: $\mathcal{E}_{\text{macro}} = \mathcal{E}_{\text{temp}} \cup \mathcal{E}_{\text{rival}} \cup \mathcal{E}_{\text{semantic}}$.
+
+To construct the inter-firm adjacency structures, we utilize bipartite projections from the micro-layer. Let $\mathbf{B}_{\text{risk}}^{(t)} \in \{0,1\}^{N \times |\mathcal{V}_{\text{risk}}|}$ represent the bipartite incidence matrix where entry $B_{i,r} = 1$ if firm $i$ reports risk factor $r$, and $0$ otherwise. The macroscopic systemic risk overlap matrix $\mathbf{A}_{\text{risk}}^{(t)}$ is given by the one-mode projection:
+\begin{equation}
+    \mathbf{A}_{\text{risk}}^{(t)} = \mathbf{B}_{\text{risk}}^{(t)} (\mathbf{B}_{\text{risk}}^{(t)})^T
+\end{equation}
+where the off-diagonal entries $A_{i,j}$ quantify the number of shared operational risks between firm $i$ and firm $j$. Because our schema enforces the $\Omega(v_r)$ financial weighting (Eq. 7), these unweighted structural overlaps can easily be transformed into dollar-weighted risk contagion channels.
+
+Similarly, the rigid peer-to-peer competitive topology $\mathcal{E}_{\text{rival}}$ is forged when an extracted competitor node explicitly resolves to an external CIK within the cohort. If firm $i$ explicitly cites firm $j$ as a competitor in their Table [5] nodes, a directed edge $i \rightarrow j$ is instantiated. 
+
+Finally, the \textbf{Temporal Successor ($\mathcal{E}_{\text{temp}}$)} edges link consecutive temporal snapshots of the same firm ($G_{i,\text{micro}}^{(t)} \rightarrow G_{i,\text{micro}}^{(t+1)}$). As demonstrated by the 76.9\% internal volatility rate observed in our dataset, these temporal edges are essential for tracking longitudinal narrative drift. They allow researchers to model intra-firm division spin-offs and M\&A absorption dynamically, rather than treating the rewiring corporate node as a newly instantiated entity.

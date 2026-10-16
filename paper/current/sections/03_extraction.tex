@@ -1,0 +1,70 @@
+\section{Sequential Tranche Data Ingestion \& Schema Mapping}
+\label{sec:extraction}
+
+We developed a custom distributed pipeline to extract operational and financial disclosures from SEC N-PORT and Form 10-K filings. To ensure a fixed macro-node set across temporal snapshots, our analysis focuses on a static cohort of 108 firms that issued Form 10-K filings continuously every year from 2021 to 2025. Inspired by sequential waterfall structures in structured finance, our pipeline gates data processing into four dependency-driven tranches, enforcing schema and referential integrity before downstream network instantiation.
+
+\input{figures/fig_tranche_pipeline.tex}
+
+\subsection{Tranche 1: Static Company List}
+We extract company names and Central Index Keys (CIKs) utilizing quarterly Form N-PORT filings sourced from the SEC EDGAR system. Using a custom Python pipeline, we download submission files for the QQQ series identifier (\texttt{S000101292}) for Invesco covering 2021 to 2025. We filter these 20 quarterly files to isolate U.S.-based firms (\texttt{country == 'US'}). Removing redundant entries by unique ISINs yields 120 unique CIKs. We manually audited this list to ensure continuous Form 10-K filings across the 5-year window. Filtering out firms involved in M\&A or index removal yields a final static cohort of $N = 108$ unique corporate nodes ($540$ firm-years).
+
+\subsection{Tranche 2: Section-Level Parsing \& Financial Alignment}
+\input{tables/tab_pipeline_yield.tex}
+
+We utilize the verified CIK list to extract target textual sections and financial tables from the annual Form 10-K filings. Item 1 (\textit{Business}) and Item 1A (\textit{Risk Factors}) sections are parsed programmatically using Python and the \texttt{edgartools} library. For quantitative financial disclosures, we developed a three-stage fallback extraction pipeline to recover segment and geographic revenue data:
+\begin{enumerate}
+    \item \textbf{Primary XBRL Extraction:} We automated the extraction of four distinct XBRL statement types per filing, creating a validation pool of 2,160 data instances.
+    \item \textbf{Automated Keyword Fallback:} For filings failing primary XBRL extraction, we executed an automated parser targeting segment and geographic revenue keywords.
+    \item \textbf{Native HTML Anchor Splitting:} Remaining data gaps were resolved by manually cross-referencing native HTML filings to identify exact keyword anchors, applying targeted \texttt{str.split} operations to isolate tabular blocks.
+\end{enumerate}
+
+\subsection{Tranche 3: Hybrid LLM Serialization \& Python Verification Engine}
+Tranche 3 transforms heterogeneous narrative blocks from Items 1 and 1A into a standardized 10-table JSON schema. Because standard Named Entity Recognition (NER) fails to capture complex hierarchical nesting, we deployed a local, open-weight Large Language Model pipeline utilizing Llama 3.3 (\texttt{llama3.3:latest}). Inference was executed via a dedicated university computing endpoint (\texttt{chat.binghamton.edu}) at a temperature of 0.0, constrained by strict Pydantic structured models. To ensure API resilience over massive document batches, the pipeline utilized a 4-tier exponential backoff engine alongside OS-level native keep-awake commands.
+
+\vspace{0.5em}
+\noindent\textbf{Item 1 (Business): Hierarchical Product \& Competitor Extraction} \\
+The operational extraction executes a two-stage conditioned architecture. Stage 1 detects the firm's segment basis and extracts product offerings while filtering administrative noise. Crucially, the model captures verbatim anchor quotes defining the segment boundaries. Stage 2 dynamically injects these confirmed segments into the prompt, forcing the LLM to route extracted competitors directly to specific operational arenas, classifying them as either named corporate peers (\textit{Explicit}) or market substitutes (\textit{Inferred}). Filings failing deterministic Python grounding checks—comprising 161 edge cases due to non-standard taxonomies (e.g., functional divisions, monolithic structures)—were routed to a corrective fallback engine utilizing relaxed semantic boundaries, followed by a final Abstract Syntax Tree (\texttt{ast.literal\_eval}) normalization pass.
+
+\vspace{0.5em}
+\noindent\textbf{Item 1A (Risk Factors): Compression \& Segment-Aware Routing} \\
+Because Risk Factor sections frequently exceed 300,000 characters, we engineered a stateful architecture to bypass context limits and eliminate hallucination. A deterministic Python heuristic (the ``Belly Cut'') aggressively compresses the document by truncating body paragraphs to their core trigger sentences, achieving a $\sim$45\% token reduction. The chunker dynamically injects the active Macro Category at the top of split chunks to preserve taxonomical memory. Acting as a segment-aware router, the LLM classifies risks as segment-specific or \textit{Company-Wide}. Validated nodes are subsequently hydrated with their full verbatim text via block IDs and stitched into a unified 5-level risk topology.
+
+\vspace{0.5em}
+\noindent\textbf{WRDS Financial Reconciliation (Tier 3 LLM Mapping)} \\
+Bridging the semantic gap between narrative segments (Item 1) and audited ASC 280 financial data requires a specialized contextual reconciliation engine. To minimize token overhead, the pipeline temporally deduplicates the financial time-series to unique division names, sanitizes non-compliant \texttt{NaN} values, and programmatically filters out \texttt{CORPORATE} and \texttt{ELIMINATION} accounting roles. The sanitized payload is passed to the LLM to map accounting taxonomy to narrative phrasing under strict cardinality rules. 
+
+To counter open-weight LLM formatting anomalies (e.g., trailing conversational text), the pipeline implements a custom bracket-counting JSON parser and defensive Pydantic routing. Hallucinated null mappings are gracefully discarded without dropping underlying financial revenue. Validated mappings are subsequently propagated across the historical lookback period to establish year-over-year financial edges, and immutably cached (\texttt{.jsonl}) to guarantee idempotent graph reproducibility.
+
+\begin{figure*}[t]
+\centering
+\scriptsize
+\begin{verbatim}
+[1] COMPANY FILING SNAPSHOT (item1_v7_company_nodes) 
+|   PK: company_id (CIK_YYYY)
+|
++---+ (1:N) [4] COMP-SEGMENT NODES (item1_v7_competitor_segment_nodes)
+|   |       PK: comp_segment_id  |  FK: company_id
+|   +---> [5] COMPETITOR NODES (item1_v7_competitor_nodes)
+|             PK: competitor_id  |  FK: comp_segment_id  |  mention_type: EXPLICIT / INFERRED
+|
++---+ (1:N) [6] RISK CATEGORIES (item1A_v1_risk_category_nodes)
+|   |       PK: risk_category_id  |  FK: company_id
+|   +---> [7] UNIFIED RISK NODES (item1A_v1_risk_nodes)
+|         |   PK: risk_id  |  FK: risk_category_id
+|         +---> [8] RISK-SEGMENT BRIDGES (item1A_v1_risk_seg_edges)
+|                   PK: (risk_id, prod_segment_id)  |  M:N Associative Bridge
+|
++---+ (1:N) [10] WRDS GEO FINANCIALS (item1_v7_wrds_geo_financial_nodes)
+|           PK: wrds_geo_id  |  FK: company_id  |  (Weak/Conditional Link to [2])
+|
++---+ (1:N) [9] WRDS BUS FINANCIALS (item1_v7_wrds_bus_financial_nodes)
+|           PK: wrds_bus_id  |  FK: company_id  |  node_role: OPERATING (N:1 to [2])
+|
++---+ (1:N) [2] PROD-SERVICE SEGMENT NODES (item1_v7_prod_segment_nodes)
+    |       PK: prod_segment_id  |  FK: company_id
+    +---> [3] PROD/SERVICE ATOMIC NODES (item1_v7_prod_nodes)
+              PK: product_id  |  FK: prod_segment_id
+\end{verbatim}
+\caption{Entity-Relationship (ER) Schema outlining the 10-table architecture of the SEC 10-K Knowledge Graph. The database is anchored by the Corporate Snapshot [1], which branches vertically into operational, competitive, risk, and financial nodes. Horizontal foreign-key bridges (e.g., Table [8] and the \texttt{prod\_segment\_id} in Table [4]) force external pressures to resolve directly to operational segments [2].}
+\label{fig:er_diagram}
+\end{figure*}

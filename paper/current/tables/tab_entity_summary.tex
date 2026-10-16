@@ -1,0 +1,28 @@
+\begin{table}[htbp]
+\centering
+\caption{Structural Definition and Segment Alignment Constraints of the SEC 10-K Micro-Network Entities. This schema enforces strict ontological boundaries, ensuring that external threats (risks, competitors) and financial metrics correctly resolve to their corresponding operational segment nodes.}
+\label{tab:entity_summary}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}cclll@{}}
+\toprule
+\textbf{ID} & \textbf{Micro-Branch} & \textbf{Graph Entity / Node Tier} & \textbf{Primary Target Mapping} & \textbf{Segment Alignment Constraint} \\ 
+\midrule
+No. 1 & \texttt{Root} & Company Filing Snapshot ($v_{\text{comp}}$) & Macro-Network Edges & Longitudinal Anchor \& Enterprise Origin \\
+\midrule
+No. 2 & \texttt{Product} & Operating Segments ($\mathcal{V}_{\text{pseg}}$) & Maps from $v_{\text{comp}}$ & \textbf{Primary Central Hub:} Anchor for [4, 8, 9, 10] \\
+No. 3 & \texttt{Product} & Granular Product Leaves ($\mathcal{V}_{\text{prod}}$) & Maps to Segment [2] & 1:N Hierarchical block lineage \\
+\midrule
+No. 4 & \texttt{Competitor} & Competitor Segments ($\mathcal{V}_{\text{cseg}}$) & Maps to Segment [2] & N:1 Bridge to specific operating segment \\
+No. 5 & \texttt{Competitor} & Peer Competitor Nodes ($\mathcal{V}_{\text{cmpt}}$) & Maps to Comp Segment [4] & Resolves to external peer CIKs \\
+\midrule
+No. 6 & \texttt{Risk} & Risk Taxonomy Categories ($\mathcal{V}_{\text{rcat}}$) & Maps from $v_{\text{comp}}$ & Macro/Sub structural taxonomy preservation \\
+No. 7 & \texttt{Risk} & Unified Risk Nodes ($\mathcal{V}_{\text{risk}}$) & Maps from Category [6] & Bifurcated scope (\texttt{is\_company\_wide}) \\
+No. 8 & \texttt{Risk} & Risk-Segment Edges ($\mathcal{E}_{\text{risk\_bridge}}$) & Maps Risk [7] $\rightarrow$ Seg [2] & \textbf{M:N Associative Bridge} (Multi-segment threats) \\
+\midrule
+No. 9 & \texttt{Business} & WRDS Segment Financials ($\mathcal{V}_{\text{wbus}}$) & Maps to Segment [2] & \textbf{Strict N:1:} Filtered by \texttt{node\_role = OPERATING} \\
+No. 10 & \texttt{Geographic} & WRDS Region Financials ($\mathcal{V}_{\text{wgeo}}$) & Maps to $v_{\text{comp}}$ / Seg [2] & \textbf{Weak/Conditional:} Only if primary segment is Geo \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

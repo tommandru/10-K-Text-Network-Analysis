@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\caption{Pipeline Yield and Cohort Retention across Tranches 1 and 2 (2021--2025). The 3-stage fallback pipeline ensures 100\% filing coverage across the 540 continuous firm-years.}
+\label{tab:pipeline_yield}
+\small
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+\textbf{Tranche} & \textbf{Processing Stage} & \textbf{Initial Volume} & \textbf{Retained} & \textbf{Yield / Coverage} \\
+\midrule
+\textbf{Tranche 1} & QQQ N-PORT Extraction (U.S. Domicile) & 120 CIKs & 120 CIKs & 100.0\% \\
+ & 5-Year Longitudinal Continuity Audit & 120 CIKs & 108 CIKs & 90.0\% (12 M\&A/Exits) \\
+\midrule
+\textbf{Tranche 2} & Form 10-K Base Documents ($108 \times 5$ yrs) & 540 Filings & 540 Filings & 100.0\% \\
+ & Items 1 \& 1A Narrative Parsing (\texttt{edgartools}) & 540 Filings & 530 Filings & 98.1\% \\
+ & Items 1 \& 1A DOM Anomaly Resolution & 10 Filings & 10 Filings & 100.0\% (Coverage) \\
+ & Items 7 \& 8 Financial Validation (XBRL pool) & 2,160 XBRLs & 540 Maps & 3-Stage Fallback \\
+\bottomrule
+\end{tabular}
+\end{table}
